@@ -39,11 +39,11 @@ def parse_directions(soup):
 def main(url):
     website_url = requests.get(url).text
     soup = BeautifulSoup(website_url, 'lxml')
-    ingredients = parse_ingredients()
+    ingredients = parse_ingredients(soup)
     directions = parse_directions(soup)
     return ingredients, directions
 
 
 if __name__ == '__main__':
     print(main(
-        'https://www.allrecipes.com/recipe/273326/parmesan-crusted-shrimp-scampi-with-pasta/?internalSource=previously%20viewed&referringContentType=Homepage&clickId=cardslot%202'))
+        'https://www.allrecipes.com/recipe/14746/mushroom-pork-chops/?internalSource=staff%20pick&referringId=205&referringContentType=Recipe%20Hub'))
