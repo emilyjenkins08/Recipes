@@ -3,10 +3,8 @@ from lxml import html
 from bs4 import BeautifulSoup
 
 
-def parse_ingredients(url):
+def parse_ingredients(soup):
     ingredients = []
-    website_url = requests.get(url).text
-    soup = BeautifulSoup(website_url, 'lxml')
     site_content = soup.find('div', {"class": "site-content"}).find('div', {"class": "container-content body-content"}). \
         find('div', {"class": "recipe-container-outer"}).find('section', {"class": "ar_recipe_index"}). \
         find('section', {"class": "recipe-ingredients"}).find('div', {'id': "polaris-app"})
@@ -22,8 +20,28 @@ def parse_ingredients(url):
     return ingredients
 
 
+def parse_directions(soup):
+    directions = []
+    site_content = soup.find('div', {"class": "site-content"}).find('div', {"class": "container-content body-content"}). \
+        find('div', {"class": "recipe-container-outer"}).find('section', {"class": "ar_recipe_index"}). \
+        find('section', {"class": "recipe-directions"}).find('div', {'class': "directions--section"}).\
+        find('div', {'class': "directions--section__steps"}).find('ol', {"class":"list-numbers"})
+    direction_list = site_content.findAll('li', {'class':"step"})
+    for step in direction_list:
+        t = step.find(['span', 'p'])
+        if t is not None:
+            step_text = t.text
+            directions.append(step_text.rstrip())
+
+    return directions
+
+
 def main(url):
-    return parse_ingredients(url)
+    website_url = requests.get(url).text
+    soup = BeautifulSoup(website_url, 'lxml')
+    ingredients = parse_ingredients()
+    directions = parse_directions(soup)
+    return ingredients, directions
 
 
 if __name__ == '__main__':
