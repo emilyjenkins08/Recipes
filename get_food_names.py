@@ -43,7 +43,6 @@ def main(ind_lst):
 	ing_lst = []
 	#print(ind_lst, '\n')
 	for item in ind_lst:
-		item = item.replace("-","")
 		slt = item.split()
 		i,start,end = 0,0,len(slt)
 		name = ''
@@ -64,22 +63,34 @@ def main(ind_lst):
 					start = max(start, i + 1)
 					i += 1
 					continue
-			mflag = True
 			if wrd in measurements:
 				meas = wrd
-				mflag = False
 				start = max(start, i + 1)
-			if mflag and wrd[-1] == 's':
-				if wrd[:-1] in measurements:
-					meas = wrd
-					start = max(start, i + 1)
+			else:
+				if wrd[-1] == 's':
+					if wrd[:-1] in measurements:
+						meas = wrd
+						start = max(start, i + 1)
 			if wrd[-1] == ',':
-				end = i
+				end = min(end,i)
+			if wrd == '-':
+				end = min(end,i-1)
+			prep_found = False
 			if wrd in preparation:
+				prep_found = True
 				prep_lst.append(wrd)
 			else:
+				if wrd[-1] == ',':
+					if wrd[:-1] in preparation:
+						prep_found = True
+						prep_lst.append(wrd[:-1])
+			if not prep_found:
 				if wrd in description:
 					desc_lst.append(wrd)
+				else:
+					if wrd[-1] == ',':
+						if wrd[:-1] in preparation:
+							prep_lst.append(wrd[:-1])
 			i += 1
 		if prep_lst != []:
 			prep = ' '.join(prep_lst)
