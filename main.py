@@ -1,7 +1,7 @@
 import requests
 from lxml import html
 from bs4 import BeautifulSoup
-
+from parse import wrapper
 
 def parse_ingredients(soup):
     ingredients = []
@@ -45,5 +45,6 @@ def main(url):
 
 
 if __name__ == '__main__':
-    print(main(
-        'https://www.allrecipes.com/recipe/14746/mushroom-pork-chops/?internalSource=staff%20pick&referringId=205&referringContentType=Recipe%20Hub'))
+    url = 'https://www.allrecipes.com/recipe/14746/mushroom-pork-chops/?internalSource=staff%20pick&referringId=205&referringContentType=Recipe%20Hub'
+    ing_lst, step_lst = main(url)
+    wrapper(ing_lst, step_lst)
