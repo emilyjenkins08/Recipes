@@ -1,14 +1,14 @@
 #from fuzzywuzzy import fuzz
-from main import main as get_ind_lst
+from main import main as get_ing_lst
 
-class ingredient:
+class food:
 	def __init__(self, name, quant, meas, desc, prep):
 		self.name = name
 		self.quant = quant
 		self.meas = meas
 		self.desc = desc
 		self.prep = prep
-	def print_ing(self):
+	def print_food(self):
 		print("Name: ", self.name)
 		if self.quant:
 			print("Quantity: ", self.quant)
@@ -39,10 +39,9 @@ def get_num(text):
 		num = int(text)
 	return num
 
-def main(ind_lst):
-	ing_lst = []
-	#print(ind_lst, '\n')
-	for item in ind_lst:
+def main(ing_lst):
+	food_lst = []
+	for item in ing_lst:
 		slt = item.split()
 		i,start,end = 0,0,len(slt)
 		name = ''
@@ -105,13 +104,13 @@ def main(ind_lst):
 		name = ' '. join(name[start:])
 		if name[-1] == ',':
 			name = name[:-1]
-		ing_lst.append(ingredient(name, quant, meas, desc, prep))
-	return ing_lst
+		food_lst.append(food(name, quant, meas, desc, prep))
+	return food_lst
 
 if __name__ == '__main__':
-	url = 'https://www.allrecipes.com/recipe/13436/italian-sausage-soup-with-tortellini/?internalSource=hub%20recipe&referringContentType=Search'
-	lst = get_ind_lst(url)[0]
-	ing_lst = main(lst)
-	for ing in ing_lst:
-		ing.print_ing()
+	url = 'https://www.allrecipes.com/recipe/14054/lasagna/?internalSource=hub%20recipe&referringContentType=Search'
+	ing_lst = get_ing_lst(url)[0]
+	food_lst = main(ing_lst)
+	for food in food_lst:
+		food.print_food()
 
