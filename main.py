@@ -88,7 +88,7 @@ def main(url):
     servings = parse_servings(soup)
     cuisine = parse_cuisine(soup)
     name = parse_name(soup)
-    rp = recipe(name, groups, ingredients, directions, servings, cuisine)
+    rp = recipe(name, groups, ingredients, directions, cuisine, servings)
     return rp
 
 
