@@ -27,8 +27,12 @@ from parse import food, direction
 import string
 from collections import deque
 
+#helper to lowercase and remove punctuation
+def remove_punc_lower(text):
+	return text.lower().translate(str.maketrans('', '', string.punctuation)) 
+
 def lookup(ing, lst):
-	name_lst = ing.name.lower().translate(str.maketrans('', '', string.punctuation)).split()
+	name_lst = remove_punc_lower(ing.name).split()
 	for word in name_lst:
 		if word in lst:
 			return ing.name
@@ -37,11 +41,27 @@ def lookup(ing, lst):
 				return ing.name
 	return False
 
-#this is going to be the code for substituing 'corned beef' to 'turkey' instead of 'turkey turkey'
-#this will also fix 'foil' turning into 'folive oil'
-#still have to write it
-def check(food_part,food_whole,step_text):
-	pass
+#helper that goes through the step text and makes replacements for it based on the subs that is passed in
+#sometimes the outputted text is missing punctutaions.
+def make_substitutions(old_food,new_food,step_text):
+	text_slt = step_text.split()
+	old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
+	ind = 0
+	subs = []
+	rmv = []
+	while ind < len(text_slt):
+		wrd = text_slt[ind]
+		#print("Word: ", wrd)
+		if remove_punc_lower(wrd) in old_food_slt:
+			rmv.append(wrd)
+		else:
+			if rmv != []:
+				subs.append(" ".join(rmv))
+				rmv = []
+		ind += 1
+	for i in subs:
+		step_text = step_text.replace(i,new_food)
+	return step_text
 
 
 def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
@@ -101,21 +121,15 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 		else:
 			meat_name = ', '.join(meat_name_lst[:-1]) + ' and ' + meat_name_lst[-1]
 		direc_obj_q = deque(direc_obj_lst)
-		trim_fat = direction('Prep the ' + meat_name + ' by trimming the fat and removing the skin.',[],[],[],[])
+		trim_fat = direction('Prep the ' + meat_name + ' by trimming the fat and removing the skin.',meat_name_lst,[],[],[])
 		direc_obj_q.appendleft(trim_fat)
 		direc_obj_lst = list(direc_obj_q)
 	
 	#making food substitutions to the directions list
-	print(subs)
+	#print(subs)
 	for direc in direc_obj_lst:
 		for sub in subs:
-			if sub[0] in direc.step:
-				direc.step = direc.step.replace(sub[0], sub[1])
-			else:
-				for i in sub[0].split():
-					if i in direc.step:
-						if check(i,sub[0],direc.step):
-							direc.step = direc.step.replace(i, sub[1])
+			direc.step = make_substitutions(sub[0],sub[1],direc.step)
 			if sub[0] in direc.ingredient:
 				direc.ingredient[direc.ingredient.index(sub[0])] = sub[1]
 
@@ -133,5 +147,3 @@ if __name__ == '__main__':
     recipe = get_recipe_info(url)
     food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
     main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
-
-
