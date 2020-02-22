@@ -1,4 +1,5 @@
-# from fuzzywuzzy import fuzz
+import string
+
 class food:
     def __init__(self, name, quant, meas, desc, prep):
         self.name = name
@@ -157,6 +158,22 @@ def extract_food_info(ing_lst):
             food_name_lst.append(name)
     return food_lst, food_name_lst
 
+#helper to lowercase and remove punctuation
+def remove_punc_lower(text):
+    return text.lower().translate(str.maketrans('', '', string.punctuation)) 
+
+#helper modified/based off of make_substitutions() written in transform_healthy
+def exist(old_food,step_text):
+    text_slt = step_text.split()
+    old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
+    ind = 0
+    while ind < len(text_slt):
+        wrd = text_slt[ind]
+        if remove_punc_lower(wrd) in old_food_slt:
+            return True
+        ind += 1
+    return False
+
 
 def extract_directional_info(steps, ingredient_lst):
     tools = ["pot", "pan", "oven", "oven rack", "broiler", "skillet", "saute pan", "bowl", "plate", "tongs", "fork",
@@ -186,7 +203,7 @@ def extract_directional_info(steps, ingredient_lst):
                 if method not in master_methods:
                     master_methods.append(method)
         for ingredient in ingredient_lst:
-            if ingredient in new_step and ingredient not in ingredients_used:
+            if exist(ingredient, new_step) and ingredient not in ingredients_used:
                 ingredients_used.append(ingredient)
         for time in times:
             if time in new_step and time not in times_included:
@@ -195,8 +212,6 @@ def extract_directional_info(steps, ingredient_lst):
                 while start > 0 and new_step[start] != " ":
                     digits = new_step[start] + digits
                     start -= 1
-                #index_num = new_step.split().index(time) - 1
-                #times_included.append(step.split()[index_num] + " " + time)
                 times_included.append(digits + " " + time)
         direc_lst.append(
             direction(step.replace("Watch Now", ""), ingredients_used, methods_used, tools_needed, times_included))
