@@ -169,7 +169,10 @@ def exist(old_food,step_text):
     ind = 0
     while ind < len(text_slt):
         wrd = text_slt[ind]
-        if remove_punc_lower(wrd) in old_food_slt:
+        wrd_mod = remove_punc_lower(wrd)
+        if wrd_mod in old_food_slt:
+            return True
+        elif: wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
             return True
         ind += 1
     return False
