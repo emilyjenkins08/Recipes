@@ -52,13 +52,17 @@ def make_substitutions(old_food,new_food,step_text):
 	while ind < len(text_slt):
 		wrd = text_slt[ind]
 		#print("Word: ", wrd)
-		if remove_punc_lower(wrd) in old_food_slt:
+		wrd_mod = remove_punc_lower(wrd)
+		if wrd_mod in old_food_slt:
+			rmv.append(wrd)
+		elif: wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
 			rmv.append(wrd)
 		else:
 			if rmv != []:
 				subs.append(" ".join(rmv))
 				rmv = []
 		ind += 1
+	subs = list(set(subs))
 	for i in subs:
 		step_text = step_text.replace(i,new_food)
 	return step_text
@@ -132,7 +136,6 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 			direc.step = make_substitutions(sub[0],sub[1],direc.step)
 			if sub[0] in direc.ingredient:
 				direc.ingredient[direc.ingredient.index(sub[0])] = sub[1]
-
 	for ing in food_obj_lst:
 		ing.print_food()
 	for step in direc_obj_lst:
