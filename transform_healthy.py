@@ -55,7 +55,7 @@ def make_substitutions(old_food,new_food,step_text):
 		wrd_mod = remove_punc_lower(wrd)
 		if wrd_mod in old_food_slt:
 			rmv.append(wrd)
-		elif: wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
+		elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
 			rmv.append(wrd)
 		else:
 			if rmv != []:
@@ -63,8 +63,12 @@ def make_substitutions(old_food,new_food,step_text):
 				rmv = []
 		ind += 1
 	subs = list(set(subs))
+	subs.sort(key = lambda x: -len(x))
 	for i in subs:
-		step_text = step_text.replace(i,new_food)
+		if i[-1] in [';',',','.']:
+			step_text = step_text.replace(i,new_food + i[-1])
+		else:
+			step_text = step_text.replace(i,new_food)
 	return step_text
 
 
@@ -107,7 +111,7 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 			ing.quant = ing.quant / 4
 			continue
 		if lookup(ing, low_fat):
-			ing.name = 'low_fat ' + ing.name
+			ing.name = 'low fat ' + ing.name
 			continue
 		if lookup(ing, whole_grain):
 			ing.name = 'whole grain ' + ing.name
@@ -140,13 +144,12 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 		ing.print_food()
 	for step in direc_obj_lst:
 		step.print_dir()
-
 	return
 
 
 
 if __name__ == '__main__':
-    url = 'https://www.allrecipes.com/recipe/231030/braised-corned-beef-brisket/'
+    url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
     recipe = get_recipe_info(url)
     food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
     main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)

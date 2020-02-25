@@ -54,8 +54,19 @@ def get_num(arr):
             bottom = text[ind + 1:]
             num += (int(top) / int(bottom))
         else:
-            num += int(text)
+            num += float(text)
     return num
+
+def get_meas(wrd_lst):
+    better_measurements = ['bunch', 'clove', 'cup', 'ounce', 'pinch', 'pint', 'pound', 'teaspoon',
+                    'tablespoon']
+    for i in wrd_lst:
+        if i in better_measurements:
+            return i
+        else:
+            if i[-1] == 's' and i[:-1] in better_measurements:
+                    return i
+    return False
 
 
 def extract_food_info(ing_lst):
@@ -63,7 +74,7 @@ def extract_food_info(ing_lst):
                    'divided', 'drained', 'finely', 'grated', 'juiced', 'minced', 'peeled', 'rinsed', 'seeded',
                    'shredded', 'sliced', 'steamed', 'uncooked', 'shelled', 'thawed', 'shucked']
     description = ['dried', 'fresh', 'freshly', 'large', 'medium', 'seasoned', 'small', 'thinly', 'unopened',
-                   'undrained', 'ground']
+                   'undrained', 'ground', 'spicy']
     measurements = ['bunch', 'can', 'clove', 'cup', 'ounce', 'package', 'pinch', 'pint', 'pound', 'teaspoon',
                     'tablespoon', 'container']
 
@@ -103,12 +114,14 @@ def extract_food_info(ing_lst):
             if wrd in measurements:
                 meas = wrd
                 start = max(start, i + 1)
+                '''
                 try:
                     open_paren = item.index('(')
                     close_paren = item.index(')')
                     meas = item[open_paren:close_paren+1] + " " + meas
                 except ValueError:
                     pass
+                '''
             else:
                 if wrd[-1] == 's' and wrd[:-1] in measurements:
                     meas = wrd
@@ -147,8 +160,16 @@ def extract_food_info(ing_lst):
         name = ' '.join(name[start:])
         if name[-1] == ',':
             name = name[:-1]
+        if '(' in item and ')' in item:
+            #extrat possible quant and meas that might be in the parentheses
+            possible_quant = item[item.index('('):item.index(')')+1][1:-1]
+            pair = [get_num(possible_quant.split()),get_meas(possible_quant.split())]
+            if pair[0] != 0 and pair[1]:
+                quant = pair[0]
+                meas = pair[1]
         if '(' in name and ')' in name:
-            name = name.replace(name[name.index('('):name.index(')') + 1], "")
+            #modify name to get rid of parentheses
+            name = name.replace(name[name.index('('):name.index(')')+1], "")
             if name[-1] == " ":
                 name = name[:-1]
             if name[0] == " ":
@@ -195,7 +216,7 @@ def extract_directional_info(steps, ingredient_lst):
     methods = ["saute", "broil", "boil", "poach", "cook", "whisk", "bake", "stir", "mix", "preheat", "set", "heat",
                "add", "remove", "place", "grate", "shake", "stir", "crush", "squeeze", "beat", "toss", "top",
                "sprinkle", "chop ", "dice", "mince", "cut", "drain", "coat", "serve", "combine", "marinate", "transfer",
-               "layer", "microwave", "spoon", "pour", "season", 'shell', 'thaw', 'shuck', 'devein']
+               "layer", "microwave", "spoon", "pour", "season", 'shell', 'thaw', 'shuck', 'devein','roast']
     direc_lst = []
     master_methods = []
     master_tools = []
