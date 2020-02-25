@@ -1,7 +1,8 @@
 import requests
 from lxml import html
 from bs4 import BeautifulSoup
-from parse import wrapper
+from parse import wrapper, extract_food_info
+from transform_vegetarian import vegetarian
 
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
             'Persian', 'Filipino', 'Indonesian', 'Malaysian', 'Vietnamese', 'Asian', 'Caribbean', 'South American',
@@ -77,7 +78,7 @@ def parse_cuisine(soup):
 
 def parse_name(soup):
     name = soup.find("h1", {"id": "recipe-main-content"}).text
-    return name
+    return name.lower()
 
 
 def main(url):
@@ -93,7 +94,10 @@ def main(url):
 
 
 if __name__ == '__main__':
-    url = 'https://www.allrecipes.com/recipe/14746/mushroom-pork-chops/'
+    url = 'https://www.allrecipes.com/recipe/156037/classic-lasagna/'
     recipe = main(url)
-    ing_lst, step_lst = recipe.ingredients, recipe.directions
-    wrapper(ing_lst, step_lst)
+    #ing_lst, step_lst = recipe.ingredients, recipe.directions
+    #wrapper(ing_lst, step_lst)
+    food_lst, food_lst2 = (extract_food_info(recipe.ingredients))
+    for f in food_lst:
+        f.print_food()
