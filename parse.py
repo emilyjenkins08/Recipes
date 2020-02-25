@@ -1,5 +1,6 @@
 import string
 
+
 class food:
     def __init__(self, name, quant, meas, desc, prep):
         self.name = name
@@ -53,17 +54,29 @@ def get_num(arr):
             bottom = text[ind + 1:]
             num += (int(top) / int(bottom))
         else:
-            num += int(text)
+            num += float(text)
     return num
+
+def get_meas(wrd_lst):
+    better_measurements = ['bunch', 'clove', 'cup', 'ounce', 'pinch', 'pint', 'pound', 'teaspoon',
+                    'tablespoon']
+    for i in wrd_lst:
+        if i in better_measurements:
+            return i
+        else:
+            if i[-1] == 's' and i[:-1] in better_measurements:
+                    return i
+    return False
 
 
 def extract_food_info(ing_lst):
     preparation = ['beaten', 'chopped', 'cooked', 'condensed', 'crushed', 'cut', 'cubed', 'deveined', 'diced',
                    'divided', 'drained', 'finely', 'grated', 'juiced', 'minced', 'peeled', 'rinsed', 'seeded',
-                   'shredded', 'sliced', 'steamed', 'uncooked']
-    description = ['dried', 'fresh', 'freshly', 'large', 'medium', 'seasoned', 'small', 'spicy', 'thinly']
+                   'shredded', 'sliced', 'steamed', 'uncooked', 'shelled', 'thawed', 'shucked']
+    description = ['dried', 'fresh', 'freshly', 'large', 'medium', 'seasoned', 'small', 'thinly', 'unopened',
+                   'undrained', 'ground', 'spicy']
     measurements = ['bunch', 'can', 'clove', 'cup', 'ounce', 'package', 'pinch', 'pint', 'pound', 'teaspoon',
-                    'tablespoon']
+                    'tablespoon', 'container']
 
     food_lst = []
     food_name_lst = []
@@ -101,6 +114,14 @@ def extract_food_info(ing_lst):
             if wrd in measurements:
                 meas = wrd
                 start = max(start, i + 1)
+                '''
+                try:
+                    open_paren = item.index('(')
+                    close_paren = item.index(')')
+                    meas = item[open_paren:close_paren+1] + " " + meas
+                except ValueError:
+                    pass
+                '''
             else:
                 if wrd[-1] == 's' and wrd[:-1] in measurements:
                     meas = wrd
@@ -139,13 +160,21 @@ def extract_food_info(ing_lst):
         name = ' '.join(name[start:])
         if name[-1] == ',':
             name = name[:-1]
+        if '(' in item and ')' in item:
+            #extrat possible quant and meas that might be in the parentheses
+            possible_quant = item[item.index('('):item.index(')')+1][1:-1]
+            pair = [get_num(possible_quant.split()),get_meas(possible_quant.split())]
+            if pair[0] != 0 and pair[1]:
+                quant = pair[0]
+                meas = pair[1]
         if '(' in name and ')' in name:
+            #modify name to get rid of parentheses
             name = name.replace(name[name.index('('):name.index(')')+1], "")
             if name[-1] == " ":
                 name = name[:-1]
             if name[0] == " ":
                 name = name[1:]
-        if "and" in name:
+        if " and " in name:
             multi_names = name.split(" and ")
             name1 = multi_names[0]
             name2 = multi_names[1]
@@ -158,12 +187,14 @@ def extract_food_info(ing_lst):
             food_name_lst.append(name)
     return food_lst, food_name_lst
 
-#helper to lowercase and remove punctuation
-def remove_punc_lower(text):
-    return text.lower().translate(str.maketrans('', '', string.punctuation)) 
 
-#helper modified/based off of make_substitutions() written in transform_healthy
-def exist(old_food,step_text):
+# helper to lowercase and remove punctuation
+def remove_punc_lower(text):
+    return text.lower().translate(str.maketrans('', '', string.punctuation))
+
+
+# helper modified/based off of make_substitutions() written in transform_healthy
+def exist(old_food, step_text):
     text_slt = step_text.split()
     old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
     ind = 0
@@ -172,7 +203,7 @@ def exist(old_food,step_text):
         wrd_mod = remove_punc_lower(wrd)
         if wrd_mod in old_food_slt:
             return True
-        elif: wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
+        elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
             return True
         ind += 1
     return False
@@ -185,7 +216,7 @@ def extract_directional_info(steps, ingredient_lst):
     methods = ["saute", "broil", "boil", "poach", "cook", "whisk", "bake", "stir", "mix", "preheat", "set", "heat",
                "add", "remove", "place", "grate", "shake", "stir", "crush", "squeeze", "beat", "toss", "top",
                "sprinkle", "chop ", "dice", "mince", "cut", "drain", "coat", "serve", "combine", "marinate", "transfer",
-               "layer", "microwave", "spoon", "pour", "season"]
+               "layer", "microwave", "spoon", "pour", "season", 'shell', 'thaw', 'shuck', 'devein','roast']
     direc_lst = []
     master_methods = []
     master_tools = []
@@ -224,7 +255,7 @@ def extract_directional_info(steps, ingredient_lst):
 def wrapper(ing_lst, step_lst):
     food_lst, food_name_lst = extract_food_info(ing_lst)
     direc_lst, master_tools, master_methods = extract_directional_info(step_lst, food_name_lst)
-    return(food_lst, food_name_lst,direc_lst,master_tools, master_methods)
+    return food_lst, food_name_lst, direc_lst, master_tools, master_methods
     """
     print("Printing Foods...")
     for food in food_lst:

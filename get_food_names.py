@@ -1,6 +1,7 @@
 #from fuzzywuzzy import fuzz
 from main import main as get_ing_lst
 
+
 class food:
 	def __init__(self, name, quant, meas, desc, prep):
 		self.name = name
@@ -20,11 +21,11 @@ class food:
 			print("Preparation: ", self.prep)
 		print('\n\n')
 
-#ind_lst = ['2 cups angel hair pasta', '1/2 cup butter, divided', '4 cloves garlic, minced', '1 pound uncooked medium shrimp, peeled and deveined', '1/2 cup white cooking wine','1 lemon, juiced', '1 teaspoon red pepper flakes', '3/4 cup seasoned bread crumbs', '3/4 cup freshly grated Parmesan cheese, divided', '2 tablespoon finely chopped fresh parsley']
 
 preparation = ['beaten','chopped','cooked','condensed', 'crushed','cut', 'cubed','deveined','diced','divided', 'drained','finely','grated','juiced','minced','peeled','rinsed','seeded','shredded','sliced','steamed','uncooked']
 description = ['dried','fresh','freshly','large','medium','seasoned','small','thinly']
 measurements = ['bunch','can','clove', 'cup','ounce','package','pinch', 'pint', 'pound', 'teaspoon', 'tablespoon']
+
 
 def get_num(text):
 	num = None
@@ -106,6 +107,7 @@ def main(ing_lst):
 			name = name[:-1]
 		food_lst.append(food(name, quant, meas, desc, prep))
 	return food_lst
+
 
 if __name__ == '__main__':
 	url = 'https://www.allrecipes.com/recipe/14054/lasagna/?internalSource=hub%20recipe&referringContentType=Search'
