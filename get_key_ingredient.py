@@ -22,8 +22,9 @@ def lookup(recipe, food_lst):
 def get_key_helper(recipe, food_lst, food_name_lst):
 	measurements = ['bunch', 'can', 'clove', 'cup', 'ounce', 'package', 'pinch', 'pint', 'pound', 'teaspoon','tablespoon', 'container','dash']
 	key_lst = lookup(recipe, food_name_lst)
-	print("Ingredient List: ", food_name_lst)
-	print("Key List: ", key_lst)
+	return key_lst
+	#print("Ingredient List: ", food_name_lst)
+	#print("Key List: ", key_lst)
 
 def get_key(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
