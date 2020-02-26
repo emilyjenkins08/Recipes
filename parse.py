@@ -95,6 +95,8 @@ def fix_name(name, prep_lst, des_lst):
         name = name.replace('  ', ' ')
     while name[-1] == ' ':
         name = name[:-1]
+    while name[0] == " ":
+        name = name[1:]
     return name
 
 

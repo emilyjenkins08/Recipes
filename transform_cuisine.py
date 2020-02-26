@@ -6,6 +6,7 @@ from parse import remove_punc_lower
 from parse import food, direction
 import string
 from collections import deque
+from get_key_ingredient import get_key
 
 def lookup(ing, lst):
 	name_lst = ing.name.lower().translate(str.maketrans('', '', string.punctuation)).split()
@@ -90,6 +91,8 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	meat_present = False
 	broth = False
 	pasta_present = False
+	pasta_sp = ""
+	meat_sp = ""
 	for ing in food_obj_lst:
 		if "broth" in ing.name or lookup(ing,meat) or lookup(ing,pasta):
 			new_food_lst.append(food(ing.name,ing.quant,ing.meas,ing.desc,ing.prep))
@@ -123,13 +126,22 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	new_str = "Add the garlic and cumin and mix well. Then add the "
 	last_food = ""
 	foodz_to_add = []
+	key_ingredients = get_key(recipe_obj)
+	print("key ingredients are ", key_ingredients)
 	for foodz in new_food_name_lst:
 		if foodz != meat_sp and foodz != pasta_sp and "broth" not in foodz and "cheese" not in foodz and "chips" not in foodz:
 			new_str += (foodz + ", ")
 			foodz_to_add.append(foodz)
+	if key_ingredients:
+		for item in key_ingredients:
+			if item not in new_food_name_lst:
+				new_food_lst.append(food(item, 1,["cup"],[],[]))
+				new_food_name_lst.append(item)
+				foodz_to_add.append(item)
+				new_str += (item + ", ")
 	new_str = new_str[:len(new_str)-2] + "."
 	new_str = new_str[:(new_str.index(foodz_to_add[-1])-1)] + " and " + new_str[new_str.index(foodz_to_add[-1]):]
-	new_str += "Reduce heat to low and simmer for about 20 to 30 minutes."
+	new_str += " Reduce heat to low and simmer for about 20 to 30 minutes."
 	new_direc_obj_lst.append(direction(new_str,foodz_to_add,["simmer"],[],["20 to 30 minutes"]))
 
 	final_step = "Break up some tortilla chips into individual bowls and pour soup over chips. Top with the Monterey Jack cheese."
@@ -182,13 +194,18 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 			new_direc_obj_lst.append(direction(str,["sugar"],['place', 'cook','stir','cool'],['ring mold'],["10 minutes"]))
 
 			str2 = "Combine"
-			key_ingredients = ["lime", "lime juice"]
+			key_ingredients = get_key(recipe_obj)
 			str3 = " sweetened condensed milk, evaporated milk, eggs, cream cheese, and vanilla extract in a blender; blend until smooth, about 1 minute. Pour mixture over the hard caramel syrup in the tin and cover with aluminum foil. Pierce foil in the center hole of the ring with a knife; peel back foil, leaving hole uncovered for steam to circulate."
-			for item in key_ingredients:
-				str3 = " " + item + "," + str3
-				new_food_lst.append(food(item,1,["cups"],[],["pureed"]))
-				new_food_name_lst.append(item)
-			new_direc_obj_lst.append(direction(str2 + str3,["sweetened condensed milk","evaporated milk","eggs","cream cheese","vanilla extract",key_ingredients],["blend","combine","pour","cover","pierce","peel"],["blender","tin","aluminum foil"],["1 minute"]))
+
+			ingredients_involved = []
+			if key_ingredients:
+				for item in key_ingredients:
+					str3 = " " + item + "," + str3
+					new_food_lst.append(food(item,1,["cups"],[],["pureed"]))
+					new_food_name_lst.append(item)
+					ingredients_involved.append(item)
+			ingredients_involved = ingredients_involved + ["sweetened condensed milk","evaporated milk","eggs","cream cheese","vanilla extract"]
+			new_direc_obj_lst.append(direction(str2 + str3,ingredients_involved,["blend","combine","pour","cover","pierce","peel"],["blender","tin","aluminum foil"],["1 minute"]))
 
 			str4 = "Place a metal rack inside a large pot over medium heat. Add water to almost reach the rack; bring to a boil. Place the mold on the rack, cover the pot, and steam until flan is set and firm, about 45 minutes. Unmold flan onto a serving plate and let cool before serving."
 			new_direc_obj_lst.append(direction(str4,["water","flan"],["place","add","boil","steam","unmold","cool"],["metal rack",'large pot','mold','serving plate'],['45 minutes']))
@@ -206,7 +223,7 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 	return
 
 
-def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
+def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 
 	# take care of soups
 	soups = ["soup", "bisque", "stew", "gumbo"]
@@ -418,10 +435,13 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 
 ### REMEMBER TO CHANGE CODE SO WE ADD TRANSFORMED INGREDIENT TO LIST IF NOT INITIALLY THERE
 
-if __name__ == '__main__':
+def transform_cuisine():
 	#url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
 	url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
+	#url = 'https://www.allrecipes.com/recipe/12974/butternut-squash-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
 	#url = 'https://www.allrecipes.com/recipe/56927/delicious-ham-and-potato-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
 	recipe = get_recipe_info(url)
 	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
-	main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+	transform_cuisine_main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+
+transform_cuisine()
