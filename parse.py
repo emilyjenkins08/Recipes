@@ -211,7 +211,7 @@ def exist(old_food, step_text):
 
 def extract_directional_info(steps, ingredient_lst):
     tools = ["pot", "pan", "oven", "oven rack", "broiler", "skillet", "saute pan", "bowl", "plate", "tongs", "fork",
-             "whisk", "microwave"]
+             "whisk", "microwave", "baking dish", "dish"]
     times = ["minute", "hour", "second"]
     methods = ["saute", "broil", "boil", "poach", "cook", "whisk", "bake", "stir", "mix", "preheat", "set", "heat",
                "add", "remove", "place", "grate", "shake", "stir", "crush", "squeeze", "beat", "toss", "top",

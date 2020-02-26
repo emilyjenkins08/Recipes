@@ -148,6 +148,61 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	return
 
 def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
+	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','cinnamon roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
+
+	new_food_lst = []
+	new_food_name_lst = []
+	new_direc_obj_lst = []
+
+	flan_desserts = ['pie','cake','cupcake','ice cream','popsicle','flan','pudding','frosting','custard','gelato','sorbet','mousse','frozen yogurt','fudge','froyo','gelatin','sundae','icing','jam','jelly','jellyroll','marshmallow','milkshake','parfait','praline',"s'mores",'sugar','tart','torte','toffee','trifle','turnover']
+	churro_desserts = ['cookie','brownie','donut','doughnut','pastry','croissant','churro','caramel','butterscotch','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','cracker','apple crisp','biscuit','cannoli','eclair','waffle','pancake','biscotti','cinnamon roll','crepe','gingersnap','gingerbread','macaron','macaroon','nougat','shortbread','scone']
+	for wrd in recipe_obj.name.split():
+		if wrd in churro_desserts:
+			print("hi")
+		if wrd in flan_desserts: # one flan, 12 servings
+			new_food_lst.append(food("white sugar", 0.25,["cup"],[],[]))
+			new_food_name_lst.append("white sugar")
+
+			new_food_lst.append(food("sweetened condensed milk", 14,["ounces"],[],[]))
+			new_food_name_lst.append("condensed milk")
+
+			new_food_lst.append(food("evaporated milk", 14,["ounces"],[],[]))
+			new_food_name_lst.append("evaporated milk")
+
+			new_food_lst.append(food("eggs", 5,[],[],[]))
+			new_food_name_lst.append("eggs")
+
+			new_food_lst.append(food("cream cheese", 8,["ounces"],[],["softened"]))
+			new_food_name_lst.append("cream cheese")
+
+			new_food_lst.append(food("vanilla extract", 1,["teaspoon"],[],[]))
+			new_food_name_lst.append("vanilla extract")
+
+			str = "Place sugar into a 9-inch ring mold and cook over medium-high heat, stirring constantly, until sugar melts and turns golden, about 10 minutes. Watch carefully for syrup to start to change color as it burns easily. Let caramel cool and harden, about 20 minutes."
+			new_direc_obj_lst.append(direction(str,["sugar"],['place', 'cook','stir','cool'],['ring mold'],["10 minutes"]))
+
+			str2 = "Combine"
+			key_ingredients = ["lime", "lime juice"]
+			str3 = " sweetened condensed milk, evaporated milk, eggs, cream cheese, and vanilla extract in a blender; blend until smooth, about 1 minute. Pour mixture over the hard caramel syrup in the tin and cover with aluminum foil. Pierce foil in the center hole of the ring with a knife; peel back foil, leaving hole uncovered for steam to circulate."
+			for item in key_ingredients:
+				str3 = " " + item + "," + str3
+				new_food_lst.append(food(item,1,["cups"],[],["pureed"]))
+				new_food_name_lst.append(item)
+			new_direc_obj_lst.append(direction(str2 + str3,["sweetened condensed milk","evaporated milk","eggs","cream cheese","vanilla extract",key_ingredients],["blend","combine","pour","cover","pierce","peel"],["blender","tin","aluminum foil"],["1 minute"]))
+
+			str4 = "Place a metal rack inside a large pot over medium heat. Add water to almost reach the rack; bring to a boil. Place the mold on the rack, cover the pot, and steam until flan is set and firm, about 45 minutes. Unmold flan onto a serving plate and let cool before serving."
+			new_direc_obj_lst.append(direction(str4,["water","flan"],["place","add","boil","steam","unmold","cool"],["metal rack",'large pot','mold','serving plate'],['45 minutes']))
+
+
+	food_obj_lst = new_food_lst
+	food_name_lst = new_food_name_lst
+	direc_obj_lst = new_direc_obj_lst
+
+	for ing in food_obj_lst:
+		ing.print_food()
+	for step in direc_obj_lst:
+		step.print_dir()
+
 	return
 
 
@@ -155,14 +210,17 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 
 	# take care of soups
 	soups = ["soup", "bisque", "stew", "gumbo"]
-	for soup in soups:
-		if soup in recipe_obj.name:
-			transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
-			return
+	if lookup(recipe_obj,soups):
+		transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
+		return
 
 	# take care of desserts
 	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','cinnamon roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
 
+	if lookup(recipe_obj,desserts):
+		print("making dessert transformation")
+		transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
+		return
 	#if lookup(recipe_obj, desserts):
 	#	transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 	#	return
@@ -362,7 +420,7 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 
 if __name__ == '__main__':
 	#url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
-	#url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
+	url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
 	#url = 'https://www.allrecipes.com/recipe/56927/delicious-ham-and-potato-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
 	recipe = get_recipe_info(url)
 	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
