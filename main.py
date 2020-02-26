@@ -2,7 +2,6 @@ import requests
 from lxml import html
 from bs4 import BeautifulSoup
 from parse import wrapper, extract_food_info
-from transform_vegetarian import vegetarian
 
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
             'Persian', 'Filipino', 'Indonesian', 'Malaysian', 'Vietnamese', 'Asian', 'Caribbean', 'South American',
@@ -53,14 +52,12 @@ def parse_directions(soup):
 
 def parse_servings(soup):
     servings = soup.find('section', {'class': 'adjustServings'}).find('div', {'class': 'subtext'}).text.replace(
-        "Original recipe yields", "")
+        "Original recipe yields", "").replace("servings", "")
     if "(" in servings:
         ind = servings.index("(")
-        servings_pan = servings[ind + 1:-1]
-        servings_num = int(servings[:ind].replace("servings", "").strip())
-        servings = [servings_num, servings_pan]
+        servings = int(servings[:ind].strip())
     else:
-        servings = [servings]
+        servings = int(servings)
     return servings
 
 
@@ -94,10 +91,8 @@ def main(url):
 
 
 if __name__ == '__main__':
-    url = 'https://www.allrecipes.com/recipe/156037/classic-lasagna/'
+    url = 'https://www.allrecipes.com/recipe/263521/sticky-garlic-pork-chops/?internalSource=hub%20recipe&referringContentType=Search'
     recipe = main(url)
     #ing_lst, step_lst = recipe.ingredients, recipe.directions
     #wrapper(ing_lst, step_lst)
-    food_lst, food_lst2 = (extract_food_info(recipe.ingredients))
-    for f in food_lst:
-        f.print_food()
+    print(recipe.servings)
