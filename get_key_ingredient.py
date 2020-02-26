@@ -3,7 +3,7 @@ import string
 from collections import deque
 
 def remove_punc_lower(text):
-	return text.lower().translate(str.maketrans('', '', string.punctuation)) 
+	return text.lower().translate(str.maketrans('', '', string.punctuation))
 
 #modified lookup taken from transform_healthy
 def lookup(recipe, food_lst):
@@ -29,4 +29,4 @@ def get_key_helper(recipe, food_lst, food_name_lst):
 def get_key(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
 	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
-	get_key_helper(recipe, food_lst, food_name_lst)
+	return get_key_helper(recipe, food_lst, food_name_lst)
