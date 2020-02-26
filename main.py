@@ -3,7 +3,8 @@ from lxml import html
 from bs4 import BeautifulSoup
 from parse import wrapper, extract_food_info
 from transform_vegetarian import vegetarian
-
+from transform_healthy import healthy
+from get_key_ingredient import get_key
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
             'Persian', 'Filipino', 'Indonesian', 'Malaysian', 'Vietnamese', 'Asian', 'Caribbean', 'South American',
             'Latin American', 'Mediterranean', 'Lebanese', 'Turkish', 'Israeli', 'Middle Eastern',
@@ -94,10 +95,14 @@ def main(url):
 
 
 if __name__ == '__main__':
-    url = 'https://www.allrecipes.com/recipe/156037/classic-lasagna/'
+    url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
     recipe = main(url)
+    #vegetarian(recipe)
+    #healthy(recipe)
+    get_key(recipe)
+
     #ing_lst, step_lst = recipe.ingredients, recipe.directions
     #wrapper(ing_lst, step_lst)
-    food_lst, food_lst2 = (extract_food_info(recipe.ingredients))
-    for f in food_lst:
-        f.print_food()
+    #food_lst, food_lst2 = (extract_food_info(recipe.ingredients))
+    #for f in food_lst:
+    #    f.print_food()

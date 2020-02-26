@@ -21,9 +21,7 @@
         - Replace cream, whole milk, sour cream with skim milk, low-fat yogurt
 """
 
-from main import main as get_recipe_info
-from parse import wrapper
-from parse import food, direction
+from parse import extract_food_info, extract_directional_info, food, direction
 import string
 from collections import deque
 
@@ -72,9 +70,9 @@ def make_substitutions(old_food,new_food,step_text):
 	return step_text
 
 
-def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
+def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	#basic lists to cycle through to make changes
-	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate']
+	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'sugar', 'buttermilk']
 	cut_fourth = ['salt']
 	low_fat = ['milk','cheese','cream','yogurt']
 	whole_grain = ['pasta','bread','rice']
@@ -103,6 +101,9 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 		if 'oil' in ing.name.lower():
 			subs.append([ing.name, 'olive oil'])
 			ing.name = 'olive oil'
+		if 'ranch' in ing.name.lower():
+			subs.append([ing.name, 'italian dressing'])
+			ing.name = 'italian dressing'
 		###going through the other lists and seeing if chances have to be made
 		if lookup(ing, cut_half) or other_meat or replace_meat:
 			ing.quant = ing.quant / 2
@@ -111,8 +112,11 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 			ing.quant = ing.quant / 4
 			continue
 		if lookup(ing, low_fat):
-			ing.name = 'low fat ' + ing.name
+			ing.name = 'low-fat ' + ing.name
 			continue
+		if 'mayo' in ing.name.lower():
+			subs.append([ing.name, 'low fat greek yogurt'])
+			ing.name = 'low fat greek yogurt'
 		if lookup(ing, whole_grain):
 			ing.name = 'whole grain ' + ing.name
 			continue
@@ -147,9 +151,7 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 	return
 
 
-
-if __name__ == '__main__':
-    url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
-    recipe = get_recipe_info(url)
-    food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
-    main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+def healthy(recipe):
+	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
+	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
+	make_healthy(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
