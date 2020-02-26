@@ -21,60 +21,61 @@
         - Replace cream, whole milk, sour cream with skim milk, low-fat yogurt
 """
 
-from main import main as get_recipe_info
-from parse import wrapper
-from parse import food, direction
+from parse import extract_food_info, extract_directional_info, food, direction
 import string
 from collections import deque
 
-#helper to lowercase and remove punctuation
+
+# helper to lowercase and remove punctuation
 def remove_punc_lower(text):
-	return text.lower().translate(str.maketrans('', '', string.punctuation)) 
+    return text.lower().translate(str.maketrans('', '', string.punctuation))
+
 
 def lookup(ing, lst):
-	name_lst = remove_punc_lower(ing.name).split()
-	for word in name_lst:
-		if word in lst:
-			return ing.name
-		else:
-			if word[-1] == 's' and word[:-1] in lst:
-				return ing.name
-	return False
-
-#helper that goes through the step text and makes replacements for it based on the subs that is passed in
-#sometimes the outputted text is missing punctutaions.
-def make_substitutions(old_food,new_food,step_text):
-	text_slt = step_text.split()
-	old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
-	ind = 0
-	subs = []
-	rmv = []
-	while ind < len(text_slt):
-		wrd = text_slt[ind]
-		#print("Word: ", wrd)
-		wrd_mod = remove_punc_lower(wrd)
-		if wrd_mod in old_food_slt:
-			rmv.append(wrd)
-		elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
-			rmv.append(wrd)
-		else:
-			if rmv != []:
-				subs.append(" ".join(rmv))
-				rmv = []
-		ind += 1
-	subs = list(set(subs))
-	subs.sort(key = lambda x: -len(x))
-	for i in subs:
-		if i[-1] in [';',',','.']:
-			step_text = step_text.replace(i,new_food + i[-1])
-		else:
-			step_text = step_text.replace(i,new_food)
-	return step_text
+    name_lst = remove_punc_lower(ing.name).split()
+    for word in name_lst:
+        if word in lst:
+            return ing.name
+        else:
+            if word[-1] == 's' and word[:-1] in lst:
+                return ing.name
+    return False
 
 
-def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
+# helper that goes through the step text and makes replacements for it based on the subs that is passed in
+# sometimes the outputted text is missing punctutaions.
+def make_substitutions(old_food, new_food, step_text):
+    text_slt = step_text.split()
+    old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
+    ind = 0
+    subs = []
+    rmv = []
+    while ind < len(text_slt):
+        wrd = text_slt[ind]
+        # print("Word: ", wrd)
+        wrd_mod = remove_punc_lower(wrd)
+        if wrd_mod in old_food_slt:
+            rmv.append(wrd)
+        elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
+            rmv.append(wrd)
+        else:
+            if rmv != []:
+                subs.append(" ".join(rmv))
+                rmv = []
+        ind += 1
+    subs = list(set(subs))
+    subs.sort(key=lambda x: -len(x))
+    for i in subs:
+        if i[-1] in [';', ',', '.']:
+            step_text = step_text.replace(i, new_food + i[-1])
+        else:
+            step_text = step_text.replace(i, new_food)
+    return step_text
+
+
+def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	#basic lists to cycle through to make changes
-	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate']
+	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'sugar', 'buttermilk']
 	cut_fourth = ['salt']
 	low_fat = ['milk','cheese','cream','yogurt']
 	whole_grain = ['pasta','bread','rice']
@@ -103,6 +104,9 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 		if 'oil' in ing.name.lower():
 			subs.append([ing.name, 'olive oil'])
 			ing.name = 'olive oil'
+		if 'ranch' in ing.name.lower():
+			subs.append([ing.name, 'italian dressing'])
+			ing.name = 'italian dressing'
 		###going through the other lists and seeing if chances have to be made
 		if lookup(ing, cut_half) or other_meat or replace_meat:
 			ing.quant = ing.quant / 2
@@ -113,6 +117,9 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 		if lookup(ing, low_fat):
 			ing.name = 'low fat ' + ing.name
 			continue
+		if 'mayo' in ing.name.lower():
+			subs.append([ing.name, 'low fat greek yogurt'])
+			ing.name = 'low fat greek yogurt'
 		if lookup(ing, whole_grain):
 			ing.name = 'whole grain ' + ing.name
 			continue
@@ -146,10 +153,7 @@ def main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, meth
 		step.print_dir()
 	return
 
-
-
-if __name__ == '__main__':
-    url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
-    recipe = get_recipe_info(url)
-    food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
-    main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+def healthy(recipe):
+	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
+	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
+	make_healthy(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
