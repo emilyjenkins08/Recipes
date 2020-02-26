@@ -25,49 +25,52 @@ from parse import extract_food_info, extract_directional_info, food, direction
 import string
 from collections import deque
 
-#helper to lowercase and remove punctuation
+
+# helper to lowercase and remove punctuation
 def remove_punc_lower(text):
-	return text.lower().translate(str.maketrans('', '', string.punctuation)) 
+    return text.lower().translate(str.maketrans('', '', string.punctuation))
+
 
 def lookup(ing, lst):
-	name_lst = remove_punc_lower(ing.name).split()
-	for word in name_lst:
-		if word in lst:
-			return ing.name
-		else:
-			if word[-1] == 's' and word[:-1] in lst:
-				return ing.name
-	return False
+    name_lst = remove_punc_lower(ing.name).split()
+    for word in name_lst:
+        if word in lst:
+            return ing.name
+        else:
+            if word[-1] == 's' and word[:-1] in lst:
+                return ing.name
+    return False
 
-#helper that goes through the step text and makes replacements for it based on the subs that is passed in
-#sometimes the outputted text is missing punctutaions.
-def make_substitutions(old_food,new_food,step_text):
-	text_slt = step_text.split()
-	old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
-	ind = 0
-	subs = []
-	rmv = []
-	while ind < len(text_slt):
-		wrd = text_slt[ind]
-		#print("Word: ", wrd)
-		wrd_mod = remove_punc_lower(wrd)
-		if wrd_mod in old_food_slt:
-			rmv.append(wrd)
-		elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
-			rmv.append(wrd)
-		else:
-			if rmv != []:
-				subs.append(" ".join(rmv))
-				rmv = []
-		ind += 1
-	subs = list(set(subs))
-	subs.sort(key = lambda x: -len(x))
-	for i in subs:
-		if i[-1] in [';',',','.']:
-			step_text = step_text.replace(i,new_food + i[-1])
-		else:
-			step_text = step_text.replace(i,new_food)
-	return step_text
+
+# helper that goes through the step text and makes replacements for it based on the subs that is passed in
+# sometimes the outputted text is missing punctutaions.
+def make_substitutions(old_food, new_food, step_text):
+    text_slt = step_text.split()
+    old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
+    ind = 0
+    subs = []
+    rmv = []
+    while ind < len(text_slt):
+        wrd = text_slt[ind]
+        # print("Word: ", wrd)
+        wrd_mod = remove_punc_lower(wrd)
+        if wrd_mod in old_food_slt:
+            rmv.append(wrd)
+        elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
+            rmv.append(wrd)
+        else:
+            if rmv != []:
+                subs.append(" ".join(rmv))
+                rmv = []
+        ind += 1
+    subs = list(set(subs))
+    subs.sort(key=lambda x: -len(x))
+    for i in subs:
+        if i[-1] in [';', ',', '.']:
+            step_text = step_text.replace(i, new_food + i[-1])
+        else:
+            step_text = step_text.replace(i, new_food)
+    return step_text
 
 
 def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
@@ -112,7 +115,7 @@ def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_l
 			ing.quant = ing.quant / 4
 			continue
 		if lookup(ing, low_fat):
-			ing.name = 'low-fat ' + ing.name
+			ing.name = 'low fat ' + ing.name
 			continue
 		if 'mayo' in ing.name.lower():
 			subs.append([ing.name, 'low fat greek yogurt'])
@@ -149,7 +152,6 @@ def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_l
 	for step in direc_obj_lst:
 		step.print_dir()
 	return
-
 
 def healthy(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)

@@ -5,6 +5,7 @@ from parse import wrapper, extract_food_info
 from transform_vegetarian import vegetarian
 from transform_healthy import healthy
 from get_key_ingredient import get_key
+
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
             'Persian', 'Filipino', 'Indonesian', 'Malaysian', 'Vietnamese', 'Asian', 'Caribbean', 'South American',
             'Latin American', 'Mediterranean', 'Lebanese', 'Turkish', 'Israeli', 'Middle Eastern',
@@ -54,14 +55,12 @@ def parse_directions(soup):
 
 def parse_servings(soup):
     servings = soup.find('section', {'class': 'adjustServings'}).find('div', {'class': 'subtext'}).text.replace(
-        "Original recipe yields", "")
+        "Original recipe yields", "").replace("servings", "")
     if "(" in servings:
         ind = servings.index("(")
-        servings_pan = servings[ind + 1:-1]
-        servings_num = int(servings[:ind].replace("servings", "").strip())
-        servings = [servings_num, servings_pan]
+        servings = int(servings[:ind].strip())
     else:
-        servings = [servings]
+        servings = int(servings)
     return servings
 
 
@@ -100,9 +99,4 @@ if __name__ == '__main__':
     #vegetarian(recipe)
     #healthy(recipe)
     get_key(recipe)
-
-    #ing_lst, step_lst = recipe.ingredients, recipe.directions
-    #wrapper(ing_lst, step_lst)
-    #food_lst, food_lst2 = (extract_food_info(recipe.ingredients))
-    #for f in food_lst:
-    #    f.print_food()
+    #print(recipe.servings)
