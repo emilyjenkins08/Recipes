@@ -6,7 +6,7 @@ from parse import remove_punc_lower
 from parse import food, direction
 import string
 from collections import deque
-from get_key_ingredient import get_key
+from get_key_ingredient import get_key, get_key_food
 
 def lookup(ing, lst):
 	name_lst = ing.name.lower().translate(str.maketrans('', '', string.punctuation)).split()
@@ -168,10 +168,50 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 
 	flan_desserts = ['pie','cake','cupcake','ice cream','popsicle','flan','pudding','frosting','custard','gelato','sorbet','mousse','frozen yogurt','fudge','froyo','gelatin','sundae','icing','jam','jelly','jellyroll','marshmallow','milkshake','parfait','praline',"s'mores",'sugar','tart','torte','toffee','trifle','turnover']
 	churro_desserts = ['cookie','brownie','donut','doughnut','pastry','croissant','churro','caramel','butterscotch','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','cracker','apple crisp','biscuit','cannoli','eclair','waffle','pancake','biscotti','cinnamon roll','crepe','gingersnap','gingerbread','macaron','macaroon','nougat','shortbread','scone']
-	for wrd in recipe_obj.name.split():
-		if wrd in churro_desserts:
-			print("hi")
-		if wrd in flan_desserts: # one flan, 12 servings
+	type_churro = lookup(recipe_obj,churro_desserts)
+	if True:
+		if type_churro:
+			new_food_lst.append(food("water", 1,["cup"],[],[]))
+			new_food_name_lst.append("water")
+
+			new_food_lst.append(food("white sugar", 10.5,["tablespoons"],[],[]))
+			new_food_name_lst.append("white sugar")
+
+			new_food_lst.append(food("salt", 0.5,["teaspoon"],[],[]))
+			new_food_name_lst.append("salt")
+
+			new_food_lst.append(food("vegetable oil", 2,["tablespoons"],[],[]))
+			new_food_name_lst.append("vegetable oil")
+
+			new_food_lst.append(food("all-purpose flour", 1,["cup"],[],[]))
+			new_food_name_lst.append("all-purpose flour")
+
+			new_food_lst.append(food("oil", 2,["quarts"],[],[]))
+			new_food_name_lst.append("oil")
+
+			new_food_lst.append(food("cinnamon", 1,["teaspoon"],[],["ground"]))
+			new_food_name_lst.append("cinnamon")
+
+			str = "In a small saucepan over medium heat, combine water, 2 1/2 tablespoons sugar, salt and 2 tablespoons vegetable oil. Bring to a boil and remove from heat. Stir in flour until mixture forms a ball."
+			new_direc_obj_lst.append(direction(str,['water','sugar','salt','vegetable oil','flour'],['combine','boil','stir'],['saucepan'],[]))
+
+			str2 = "Heat oil for frying in deep-fryer or deep skillet to 375 degrees F (190 degrees C). Pipe strips of dough into hot oil using a pastry bag. Fry until golden; drain on paper towels."
+			new_direc_obj_lst.append(direction(str2,['oil'],['heat','pipe','fry','drain'],['deep-fryer or deep skillet''pastry bag','paper towels'],[]))
+
+			str3 = "Combine 1/2 cup sugar,"
+			str4 = "and cinnamon. Roll drained churros in cinnamon and sugar mixture."
+			ingree = ['sugar','cinnamon']
+			key_ingrr = get_key_food(recipe_obj)
+			if key_ingrr:
+				for food1 in key_ingrr:
+					str3 = str3 + " " + food1.name + ", "
+					new_food_lst.append(food(food1.name,food1.quant,food1.meas,food1.desc,food1.prep))
+					new_food_name_lst.append(food1.name)
+					ingree.append(food1.name)
+			new_direc_obj_lst.append(direction(str3+str4,[ingree],['combine','roll'],[],[]))
+
+		else:
+		#if wrd in flan_desserts: # one flan, 12 servings
 			new_food_lst.append(food("white sugar", 0.25,["cup"],[],[]))
 			new_food_name_lst.append("white sugar")
 
@@ -200,10 +240,11 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 			ingredients_involved = []
 			if key_ingredients:
 				for item in key_ingredients:
-					str3 = " " + item + "," + str3
-					new_food_lst.append(food(item,1,["cups"],[],["pureed"]))
-					new_food_name_lst.append(item)
-					ingredients_involved.append(item)
+					if item not in new_food_name_lst:
+						str3 = " " + item + "," + str3
+						new_food_lst.append(food(item,1,["cups"],[],["pureed"]))
+						new_food_name_lst.append(item)
+						ingredients_involved.append(item)
 			ingredients_involved = ingredients_involved + ["sweetened condensed milk","evaporated milk","eggs","cream cheese","vanilla extract"]
 			new_direc_obj_lst.append(direction(str2 + str3,ingredients_involved,["blend","combine","pour","cover","pierce","peel"],["blender","tin","aluminum foil"],["1 minute"]))
 
@@ -224,7 +265,9 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 
 
 def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
-
+	if recipe_obj.cuisine == "mexican" or recipe_obj.cuisine == "Mexican":
+		print("recipe is already mexican!")
+		return
 	# take care of soups
 	soups = ["soup", "bisque", "stew", "gumbo"]
 	if lookup(recipe_obj,soups):
@@ -232,9 +275,9 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 		return
 
 	# take care of desserts
-	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','cinnamon roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
+	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
 
-	if lookup(recipe_obj,desserts):
+	if lookup(recipe_obj,desserts) or "ice cream" in recipe_obj.name:
 		print("making dessert transformation")
 		transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 		return
@@ -244,7 +287,7 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 
 	#basic lists to cycle through to make changes
 	cut_half = ['cheese']
-	pasta = ['pasta','macaroni','noodle','spaghetti','fettucine','rotini','orzo','tortellini','potato']
+	pasta = ['pasta','macaroni','noodle','spaghetti','fettucine','rotini','orzo','tortellini','potatoes','potato']
 	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham']
 	#initalize substitution list for making changes in the directions in reference to foods
 	subs = []
@@ -254,8 +297,11 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 	add_tortilla_dir = False
 	add_beans_bool = False
 	add_taco_seasoning = False
+	add_sour_cream_bool = False
+	add_salsa_bool = False
 
 	make_into_casserole = False
+	no_starch_meat = False
 	make_into_tacos = False
 	make_into_rice = False
 	dessert = False
@@ -278,24 +324,34 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 				food_name_lst.append("rice")
 	print("meat list: ", meat_lst)
 	print("pasta list: ", pasta_lst)
-
-	if "baking dish" in tools_lst or ("bake" in methods_lst and "oven" in tools_lst):
+	print("tools used: ", tools_lst)
+	if "baking dish" in tools_lst or "dish" in tools_lst or ("bake" in methods_lst and "oven" in tools_lst):
 		make_into_casserole = True
 		print("making into casserole")
 	elif meat_lst:
 		make_into_tacos = True
 		add_tortilla_dir = True
 		if "corn or flour tortillas" not in food_name_lst:
-			food_lst.append(food("corn or flour tortillas", "2", [], [], []))
+			food_obj_lst.append(food("corn or flour tortillas", "2", [], [], []))
 			print("making into tacos")
 			add_taco_seasoning = True
 			food_name_lst.append("corn or flour tortillas")
-		if "taco seasoning" not in food_name_lst:
-			food_lst.append(food("taco seasoning", "1 packet (2 tbsp)",[],[],[]))
-			food_name_lst.append("taco seasoning")
+		if "mexican seasoning" not in food_name_lst:
+			food_obj_lst.append(food("mexican seasoning", "1 packet (2 tbsp)",[],[],[]))
+			food_name_lst.append("mexican seasoning")
 	elif pasta_lst:
 		make_into_rice = True
 		print("making into rice")
+		if "mexican seasoning" not in food_name_lst:
+			food_obj_lst.append(food("mexican seasoning", "1 packet (2 tbsp)",[],[],[]))
+			food_name_lst.append("mexican seasoning")
+	else:
+		no_starch_meat = True
+		print("no meat or starch. most likely a veggie")
+		if "mexican seasoning" not in food_name_lst:
+			food_obj_lst.append(food("mexican seasoning", "1 packet (2 tbsp)",[],[],[]))
+			food_name_lst.append("mexican seasoning")
+
 
 
 		# HARD CODING FOR NOW
@@ -303,17 +359,17 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 	#make_into_tacos = False
 
 	if "tomato salsa" not in food_name_lst:
-		food_lst.append(food("tomato salsa", "2 tbsp", [],[],[]))
+		food_obj_lst.append(food("tomato salsa", "2 tbsp", [],[],[]))
 		food_name_lst.append("tomato salsa")
+		add_salsa_bool = True
 	if "black beans" not in food_name_lst:
-		food_lst.append(food("black beans", "1/2 cup",[],[],[]))
+		food_obj_lst.append(food("black beans", "1/2 cup",[],[],[]))
 		food_name_lst.append("black beans")
+		add_beans_bool = True
 	if "sour cream" not in food_name_lst:
-		food_lst.append(food("sour cream", "2 tbsp", [],[],[]))
+		food_obj_lst.append(food("sour cream", "2 tbsp", [],[],[]))
 		food_name_lst.append("sour cream")
-
-	add_beans_bool = True
-	add_salsa_bool = True
+		add_sour_cream_bool = True
 
 	#code that adds a direction to cook beans
 	if add_beans_bool:
@@ -322,17 +378,49 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 		direc_obj_q.appendleft(add_beans)
 		direc_obj_lst = list(direc_obj_q)
 
+	if not make_into_casserole and not make_into_tacos:
+		if add_beans_bool:
+			if add_salsa_bool and add_sour_cream_bool:
+				direc_obj_lst[-1].step += " Serve with beans, salsa and sour cream."
+				direc_obj_lst[-1].ingredient += ["black beans", "salsa", "sour cream"]
+
+			elif add_sour_cream_bool:
+				direc_obj_lst[-1].step += " Serve with beans and sour cream."
+				direc_obj_lst[-1].ingredient += ["black beans", "sour cream"]
+			elif add_salsa_bool:
+				direc_obj_lst[-1].step += " Serve with beans and salsa."
+				direc_obj_lst[-1].ingredient += ["black beans", "salsa"]
+			else:
+				direc_obj_lst[-1].step += " Serve with beans."
+				direc_obj_lst[-1].ingredient += ["black beans"]
+
+		elif not add_beans_bool and add_salsa_bool and add_sour_cream_bool:
+			direc_obj_lst[-1].step += " Serve with salsa and sour cream."
+			direc_obj_lst[-1].ingredient += ["salsa", "sour cream"]
+
+		elif add_salsa_bool:
+			direc_obj_lst[-1].step += " Serve with salsa."
+			direc_obj_lst[-1].ingredient += ["salsa"]
+
+		elif add_sour_cream_bool:
+			direc_obj_lst[-1].step += " Serve with sour cream."
+			direc_obj_lst[-1].ingredient += ["sour cream"]
+
+	if no_starch_meat:
+		found = False
+		key_ingredients = get_key(recipe_obj)
+		for step in direc_obj_lst:
+			if found == False:
+				for i in key_ingredients:
+					if i in step.ingredient:
+						found = True
+						step.step = step.step + " Mix in the mexican seasoning with the " + i + "."
+
+
 	#code that adds a direction to put food in tortillas
 	if make_into_tacos: # and add_tortilla_dir
-		add_tortilla = direction('Scoop the prepared food into tortillas. Serve with salsa and sour cream.',['salsa','corn tortillas','sour cream'],['scoop','serve'],[],[])
+		add_tortilla = direction('Scoop the prepared food into tortillas. Serve with salsa, beans, and sour cream.',['salsa','black beans','corn tortillas','sour cream'],['scoop','serve'],[],[])
 		direc_obj_lst.append(add_tortilla)
-
-	if (make_into_rice or make_into_tacos) and add_beans_bool:
-		direc_obj_lst[-1].step += " Serve with beans on the side."
-		if "black beans" not in direc_obj_lst[-1].ingredient:
-			direc_obj_lst[-1].ingredient.append("black beans")
-		if "serve" not in direc_obj_lst[-1].method:
-			direc_obj_lst[-1].method.append("serve")
 
 	if make_into_casserole:
 		str = "Add beans and salsa to the baking dish. "
@@ -368,9 +456,84 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 				step.step = newest_step
 				step.ingredient.append("black beans")
 				step.ingredient.append("salsa")
+		direc_obj_lst[-1].step += " Serve with sour cream on top."
+		direc_obj_lst[-1].ingredient.append("sour cream")
 
 
-	if add_taco_seasoning: # currently, taco seasoning only added to the meat
+	if make_into_rice:
+		key_ingr = get_key_food(recipe_obj)
+		if key_ingr: # there exists key ingredient
+			new_food_lst = []
+			new_food_name_lst = []
+			new_dir_obj_lst = []
+
+			new_food_lst.append(food("vegetable oil", 3,["tablespoons"],[],[]))
+			new_food_name_lst.append("vegetable oil")
+
+			new_food_lst.append(food("long-grain rice", 1,["cup"],["uncooked"],[]))
+			new_food_name_lst.append("long-grain rice")
+
+			new_food_lst.append(food("garlic salt", 1,["teaspoon"],[],[]))
+			new_food_name_lst.append("garlic salt")
+
+			new_food_lst.append(food("cumin", 0.5,["teaspoon"],[],["ground"]))
+			new_food_name_lst.append("cumin")
+
+			new_food_lst.append(food("onion", 0.25,["cup"],[],["chopped"]))
+			new_food_name_lst.append("onion")
+
+			new_food_lst.append(food("tomato sauce", 0.5,["cup"],[],[]))
+			new_food_name_lst.append("tomato sauce")
+
+			new_food_lst.append(food("chicken broth", 0.5,["cup"],[],[]))
+			new_food_name_lst.append("chicken broth")
+
+			step1 = "Heat oil in a large saucepan over medium heat and add rice. Cook, stirring constantly, until puffed and golden. While rice is cooking, sprinkle with salt and cumin."
+			new_dir_obj_lst.append(direction(step1,["vegetable oil","long-grain rice","garlic salt","cumin"],["heat","add","cook","sprinkle"],["saucepan"],[]))
+
+			step2pt1 = "Stir in"
+			step2pt2 = " onions, and cook until tender. Stir in tomato sauce and chicken broth; bring to a boil. Reduce heat to low, cover and simmer for 20 to 25 minutes. Fluff with a fork."
+			made_sub = False
+			ingred = ['onion','tomato sauce','chicken broth']
+			for item in key_ingr:
+				found = False
+				if item.name in new_food_name_lst:
+					found = True
+				for wrd in item.name.split():
+					if wrd in pasta:
+						found = True
+				if not found:
+					if len(key_ingr) > 1:
+						step2pt1 = step2pt1 + " " + item.name + ","
+						made_sub = True
+						ingred.append(item.name)
+						new_food_lst.append(food(item.name,item.quant,item.meas,item.desc,item.prep))
+						new_food_name_lst.append(item.name)
+					else:
+						step2pt1 = step2pt1 + " " + item.name
+						made_sub = True
+						ingred.append(item.name)
+						new_food_lst.append(food(item.name,item.quant,item.meas,item.desc,item.prep))
+						new_food_name_lst.append(item.name)
+			if made_sub:
+				step2pt1 += " and"
+
+			new_dir_obj_lst.append(direction(step2pt1 + step2pt2,ingred,['stir','cook','boil','cover','simmer','fluff'],['fork'],["20 to 25 minutes"]))
+
+
+
+			direc_obj_lst = new_dir_obj_lst
+			food_obj_lst = new_food_lst
+			food_name_lst = new_food_name_lst
+		else:
+			#find first step where rice is present and add mexican seasoning
+			#for step in direc_obj_lst:
+			#	if "rice" in step.step:
+
+			print("hello")
+
+
+	if add_taco_seasoning and meat_present: # currently, mexican seasoning only added to the meat
 		for meatz in meat_name_lst:
 			found = False
 			for step in direc_obj_lst:
@@ -392,7 +555,7 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 					while idx <= stopper:
 						newest_step = newest_step + new_step[idx] + "."
 						idx += 1
-					newest_step = newest_step + " Mix in the taco seasoning with the meat."
+					newest_step = newest_step + " Mix in the mexican seasoning with the meat."
 					while idx < len(new_step):
 						if idx == len(new_step) - 1:
 							newest_step = newest_step + new_step[idx]
@@ -401,7 +564,7 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 						idx += 1
 
 					step.step = newest_step
-					step.ingredient.append("taco seasoning")
+					step.ingredient.append("mexican seasoning")
 
 	#making food substitutions to the directions list
 	print(subs)
@@ -437,8 +600,15 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 
 def transform_cuisine():
 	#url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
-	url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
+	#url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
+	#url = 'https://www.allrecipes.com/recipe/230103/buttery-garlic-green-beans/'
 	#url = 'https://www.allrecipes.com/recipe/12974/butternut-squash-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
+	#url = 'https://www.allrecipes.com/recipe/11679/homemade-mac-and-cheese/'
+	#url = 'https://www.allrecipes.com/recipe/76129/spinach-tomato-tortellini/'
+	#url = 'https://www.allrecipes.com/recipe/15925/creamy-au-gratin-potatoes/'
+	#url = 'https://www.allrecipes.com/recipe/23431/to-die-for-fettuccine-alfredo/'
+	#url = 'https://www.allrecipes.com/recipe/12040/spaghetti-with-marinara-sauce/'
+	url = 'https://www.allrecipes.com/recipe/15004/award-winning-soft-chocolate-chip-cookies/?internalSource=hub%20recipe&referringId=839&referringContentType=Recipe%20Hub'
 	#url = 'https://www.allrecipes.com/recipe/56927/delicious-ham-and-potato-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
 	recipe = get_recipe_info(url)
 	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
