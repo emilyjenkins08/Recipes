@@ -94,9 +94,9 @@ def main(url):
 
 
 if __name__ == '__main__':
-    url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
+    url = 'https://www.allrecipes.com/recipe/229960/shrimp-scampi-with-pasta/'
     recipe = main(url)
     #vegetarian(recipe)
-    #healthy(recipe)
-    get_key(recipe)
+    healthy(recipe)
+    #get_key(recipe)
     #print(recipe.servings)
