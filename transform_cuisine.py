@@ -199,7 +199,7 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 			new_direc_obj_lst.append(direction(str2,['oil'],['heat','pipe','fry','drain'],['deep-fryer or deep skillet''pastry bag','paper towels'],[]))
 
 			str3 = "Combine 1/2 cup sugar,"
-			str4 = "and cinnamon. Roll drained churros in cinnamon and sugar mixture."
+			str4 = "and cinnamon. Roll drained churros in the mixture."
 			ingree = ['sugar','cinnamon']
 			key_ingrr = get_key_food(recipe_obj)
 			if key_ingrr:
@@ -277,7 +277,7 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 	# take care of desserts
 	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
 
-	if lookup(recipe_obj,desserts) or "ice cream" in recipe_obj.name:
+	if lookup(recipe_obj,desserts) or "ice cream" in remove_punc_lower(recipe_obj.name):
 		print("making dessert transformation")
 		transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 		return
