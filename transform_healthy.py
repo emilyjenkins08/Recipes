@@ -87,7 +87,7 @@ def cut_amount(step_text):
 	cut_fourth = ['salt']
 	def helper(sen, prop):
 		sen_lst = sen.split()
-		print("GOT SENTENCE: ", sen)
+		#print("GOT SENTENCE: ", sen)
 		for ind in range(len(sen_lst)):
 			word = sen_lst[ind]
 			num = get_num(word)
@@ -106,18 +106,18 @@ def cut_amount(step_text):
 			step_sen[ind] = helper(sen, 2)
 		if lookup_mod(sen, cut_fourth):
 			step_sen[ind] = helper(sen, 4)
-	step_text = '.'.join(step_sen)
+	step_text = '. '.join(step_sen)
 	return step_text
 
 def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	#basic lists to cycle through to make changes
-	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'sugar', 'buttermilk']
+	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'buttermilk']
 	cut_fourth = ['salt']
 	low_fat = ['milk','cheese','cream','yogurt']
 	whole_grain = ['pasta','bread','rice']
 	low_sodium = ['soy sauce']
 	ok_meat = ['chicken','turkey','fish']
-	bad_meat = ['sausage','beef','pork','venison','bacon','ham']
+	bad_meat = ['sausage','beef','pork','venison','bacon','ham','chop','lamb','rump','steak','ribeye','loin','brisket','ribs','veal','shoulder']
 	#initalize substitution list for making changes in the directions in reference to foods
 	subs = []
 	#name of the meat to substitue is initialize as empty, list is to account for multiple meats
