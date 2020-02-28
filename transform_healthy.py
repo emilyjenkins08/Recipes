@@ -21,7 +21,7 @@
         - Replace cream, whole milk, sour cream with skim milk, low-fat yogurt
 """
 
-from parse import extract_food_info, extract_directional_info, food, direction
+from parse import extract_food_info, extract_directional_info, food, direction, get_num
 import string
 from collections import deque
 
@@ -72,6 +72,42 @@ def make_substitutions(old_food, new_food, step_text):
             step_text = step_text.replace(i, new_food)
     return step_text
 
+
+def lookup_mod(sen, lst):
+	name_lst = remove_punc_lower(sen).split()
+	for word in name_lst:
+		if word in lst:
+			return True
+		elif word[-1] == 's' and word[:-1] in lst:
+			return True
+	return False
+
+def cut_amount(step_text):
+	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'sugar', 'buttermilk']
+	cut_fourth = ['salt']
+	def helper(sen, prop):
+		sen_lst = sen.split()
+		print("GOT SENTENCE: ", sen)
+		for ind in range(len(sen_lst)):
+			word = sen_lst[ind]
+			num = get_num(word)
+			if num != 0:
+				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['minute', 'hour', 'second', 'to']):
+					num = str(num/prop)
+					if num[-2:] == '.0':
+						num = num[:-2]
+					sen_lst[ind] = num
+		sen = ' '.join(sen_lst)
+		return(sen)
+	step_sen = step_text.split('.')
+	for ind in range(len(step_sen)):
+		sen = step_sen[ind]
+		if lookup_mod(sen, cut_half):
+			step_sen[ind] = helper(sen, 2)
+		if lookup_mod(sen, cut_fourth):
+			step_sen[ind] = helper(sen, 4)
+	step_text = '.'.join(step_sen)
+	return step_text
 
 def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	#basic lists to cycle through to make changes
@@ -147,6 +183,11 @@ def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_l
 			direc.step = make_substitutions(sub[0],sub[1],direc.step)
 			if sub[0] in direc.ingredient:
 				direc.ingredient[direc.ingredient.index(sub[0])] = sub[1]
+		direc.step = cut_amount(direc.step)
+		direc.step = direc.step.replace(' fry','sauté')
+		direc.step = direc.step.replace(' Fry', 'Sauté')
+		direc.step = direc.step.replace(' fried', 'sautéd')
+		direc.step = direc.step.replace(' Fried', 'Sautéd')
 	for ing in food_obj_lst:
 		ing.print_food()
 	for step in direc_obj_lst:

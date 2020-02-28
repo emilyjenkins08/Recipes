@@ -104,9 +104,9 @@ def extract_food_info(ing_lst):
                    'divided', 'drained', 'finely', 'grated', 'juiced', 'minced', 'peeled', 'rinsed', 'seeded',
                    'shredded', 'skinless', 'sliced', 'steamed', 'uncooked', 'shelled', 'thawed', 'shucked']
     description = ['dried', 'fresh', 'freshly', 'large', 'medium', 'seasoned', 'small', 'thinly', 'unopened',
-                   'undrained', 'ground', 'spicy', 'bone-in']
+                   'undrained', 'ground', 'spicy', 'bone-in', 'chilled']
     measurements = ['bunch', 'can', 'clove', 'cup', 'ounce', 'package', 'pinch', 'pint', 'pound', 'teaspoon',
-                    'tablespoon', 'container','dash']
+                    'tablespoon', 'container','dash','quart']
 
     food_lst = []
     food_name_lst = []
