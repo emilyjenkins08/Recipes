@@ -285,9 +285,10 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 	#	transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 	#	return
 
+
 	#basic lists to cycle through to make changes
 	cut_half = ['cheese']
-	pasta = ['pasta','macaroni','noodle','spaghetti','fettucine','rotini','orzo','tortellini','potatoes','potato']
+	pasta = ['pasta','macaroni','noodle','spaghetti','fettucine','fettuccini','rotini','orzo','tortellini','potatoes','potato']
 	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham']
 	#initalize substitution list for making changes in the directions in reference to foods
 	subs = []
@@ -423,7 +424,8 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 		direc_obj_lst.append(add_tortilla)
 
 	if make_into_casserole:
-		str = "Add beans and salsa to the baking dish. "
+		str = "Add beans, salsa, and mexican seasoning to the baking dish. "
+		food_obj_lst.append(food("mexican seasoning",2,["tablespoons"],[],[]))
 		found = False
 		for step in direc_obj_lst:
 
@@ -456,6 +458,7 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 				step.step = newest_step
 				step.ingredient.append("black beans")
 				step.ingredient.append("salsa")
+				step.ingredient.append("mexican seasoning")
 		direc_obj_lst[-1].step += " Serve with sour cream on top."
 		direc_obj_lst[-1].ingredient.append("sour cream")
 
@@ -530,7 +533,33 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 			#for step in direc_obj_lst:
 			#	if "rice" in step.step:
 
-			print("hello")
+			added = False
+			for step in direc_obj_lst:
+				print(step.step)
+				if "cream" in step.step and "sour cream" not in step.step:
+					step.step = step.step.replace("cream","mexican seasoning")
+					for ingrr in step.ingredient:
+						if "cream" in ingrr.lower() and ingrr.lower() != "sour cream":
+							step.ingredient.remove(ingrr)
+							step.ingredient.append("mexican seasoning")
+			for ing in food_obj_lst:
+				if "cream" in ing.name and "sour cream" not in ing.name and not added:
+					ing.name = "mexican seasoning"
+					ing.quant = 2
+					ing.meas = "tablespoons"
+					ing.desc = []
+					ing.prep = []
+					added = True
+			if not added:
+				food_obj_lst.append(food("mexican seasoning",2,["tablespoons"],[],[]))
+				for oob in direc_obj_lst:
+					for ob in pasta_lst:
+						for wrd in ob.split():
+							if not added:
+								if wrd in oob.step:
+									oob.step += " Mix in mexican seasoning."
+									added = True
+
 
 
 	if add_taco_seasoning and meat_present: # currently, mexican seasoning only added to the meat
@@ -606,9 +635,9 @@ def transform_cuisine():
 	#url = 'https://www.allrecipes.com/recipe/11679/homemade-mac-and-cheese/'
 	#url = 'https://www.allrecipes.com/recipe/76129/spinach-tomato-tortellini/'
 	#url = 'https://www.allrecipes.com/recipe/15925/creamy-au-gratin-potatoes/'
-	#url = 'https://www.allrecipes.com/recipe/23431/to-die-for-fettuccine-alfredo/'
+	url = 'https://www.allrecipes.com/recipe/23431/to-die-for-fettuccine-alfredo/'
 	#url = 'https://www.allrecipes.com/recipe/12040/spaghetti-with-marinara-sauce/'
-	url = 'https://www.allrecipes.com/recipe/15004/award-winning-soft-chocolate-chip-cookies/?internalSource=hub%20recipe&referringId=839&referringContentType=Recipe%20Hub'
+	#url = 'https://www.allrecipes.com/recipe/15004/award-winning-soft-chocolate-chip-cookies/?internalSource=hub%20recipe&referringId=839&referringContentType=Recipe%20Hub'
 	#url = 'https://www.allrecipes.com/recipe/56927/delicious-ham-and-potato-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
 	recipe = get_recipe_info(url)
 	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
