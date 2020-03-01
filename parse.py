@@ -53,6 +53,13 @@ def get_num(arr):
             top = text[:ind]
             bottom = text[ind + 1:]
             num += (int(top) / int(bottom))
+            print('BUMMMM: ', num)
+        elif '.' in text:
+            ind = text.index('.')
+            top = text[:ind]
+            bottom = text[ind + 1:]
+            num += int(top) + int(bottom)/10
+            print('NUMMMM: ', num)
         else:
             num += float(text)
     return num

@@ -9,7 +9,7 @@ def cut_dir_amount(step_text,prop):
 			word = sen_lst[ind]
 			num = get_num(word)
 			if num != 0:
-				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['minute', 'hour', 'second', 'to']):
+				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['more','degree', 'minute', 'hour', 'second', 'to']):
 					num = str(num/prop)
 					if num[-2:] == '.0':
 						num = num[:-2]
@@ -29,20 +29,24 @@ def cut_ing_amount(food_obj_lst, direc_obj_lst,prop):
 		ing.quant = ing.quant / prop
 	for direc in direc_obj_lst:
 		direc.step = cut_dir_amount(direc.step, prop)
-
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
 	return
 
 def double_amount(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
 	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
 	cut_ing_amount(food_lst, direc_lst,.5)
+	for ing in food_obj_lst:
+		ing.print_food()
+	for step in direc_obj_lst:
+		step.print_dir()
+	return
 
 def half_amount(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
 	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
 	cut_ing_amount(food_lst, direc_lst,2)
-
+	for ing in food_obj_lst:
+		ing.print_food()
+	for step in direc_obj_lst:
+		step.print_dir()
+	return
