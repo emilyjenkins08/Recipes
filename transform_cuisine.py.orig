@@ -1,9 +1,13 @@
 # transform from recipe to mexican cuisine
 
-from parse import wrapper, remove_punc_lower, food, direction, get_num
+from main import main as get_recipe_info
+from parse import wrapper
+from parse import remove_punc_lower
+from parse import food, direction, get_num
 import string
 from collections import deque
 from get_key_ingredient import get_key, get_key_food
+from transform_amount import cut_ing_amount
 
 def lookup(ing, lst):
 	name_lst = ing.name.lower().translate(str.maketrans('', '', string.punctuation)).split()
@@ -702,6 +706,20 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 
 ### REMEMBER TO CHANGE CODE SO WE ADD TRANSFORMED INGREDIENT TO LIST IF NOT INITIALLY THERE
 
-def transform_cuisine(recipe):
+def transform_cuisine():
+	url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
+	#url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
+	#url = 'https://www.allrecipes.com/recipe/230103/buttery-garlic-green-beans/'
+	#url = 'https://www.allrecipes.com/recipe/12974/butternut-squash-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
+	#url = 'https://www.allrecipes.com/recipe/11679/homemade-mac-and-cheese/'
+	#url = 'https://www.allrecipes.com/recipe/76129/spinach-tomato-tortellini/'
+	#url = 'https://www.allrecipes.com/recipe/15925/creamy-au-gratin-potatoes/'
+	#url = 'https://www.allrecipes.com/recipe/23431/to-die-for-fettuccine-alfredo/'
+	#url = 'https://www.allrecipes.com/recipe/12040/spaghetti-with-marinara-sauce/'
+	#url = 'https://www.allrecipes.com/recipe/15004/award-winning-soft-chocolate-chip-cookies/?internalSource=hub%20recipe&referringId=839&referringContentType=Recipe%20Hub'
+	#url = 'https://www.allrecipes.com/recipe/56927/delicious-ham-and-potato-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
+	recipe = get_recipe_info(url)
 	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
 	transform_cuisine_main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+
+transform_cuisine()

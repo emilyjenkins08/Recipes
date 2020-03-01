@@ -35,9 +35,9 @@ def double_amount(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
 	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
 	cut_ing_amount(food_lst, direc_lst,.5)
-	for ing in food_obj_lst:
+	for ing in food_lst:
 		ing.print_food()
-	for step in direc_obj_lst:
+	for step in direc_lst:
 		step.print_dir()
 	return
 
@@ -45,8 +45,8 @@ def half_amount(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
 	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
 	cut_ing_amount(food_lst, direc_lst,2)
-	for ing in food_obj_lst:
+	for ing in food_lst:
 		ing.print_food()
-	for step in direc_obj_lst:
+	for step in direc_lst:
 		step.print_dir()
 	return

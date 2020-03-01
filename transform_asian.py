@@ -1,13 +1,9 @@
 # transform from recipe to asian
 
-from main import main as get_recipe_info
-from parse import wrapper
-from parse import remove_punc_lower
-from parse import food, direction
+from parse import wrapper, remove_punc_lower, food, direction
 import string
 from collections import deque
 from get_key_ingredient import get_key, get_key_food
-from transform_amount import cut_ing_amount
 
 def lookup(ing, lst):
 	name_lst = ing.name.lower().translate(str.maketrans('', '', string.punctuation)).split()
@@ -19,37 +15,6 @@ def lookup(ing, lst):
 				return ing.name
 	return False
 
-#this is going to be the code for substituing 'corned beef' to 'turkey' instead of 'turkey turkey'
-#this will also fix 'foil' turning into 'folive oil'
-#still have to write it
-def make_substitutions(old_food,new_food,step_text):
-	text_slt = step_text.split()
-	old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
-	old_food_slt.append("pasta")
-	old_food_slt.append("noodle")
-	ind = 0
-	subs = []
-	rmv = []
-	while ind < len(text_slt):
-		wrd = text_slt[ind]
-		wrd_mod = remove_punc_lower(wrd)
-		if wrd_mod in old_food_slt:
-			rmv.append(wrd)
-		elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
-			rmv.append(wrd)
-		else:
-			if rmv != []:
-				subs.append(" ".join(rmv))
-				rmv = []
-		ind += 1
-	subs = list(set(subs))
-	subs.sort(key = lambda x: -len(x))
-	for i in subs:
-		if i[-1] in ['.',',',';']:
-			step_text = step_text.replace(i,new_food + i[-1])
-		else:
-			step_text = step_text.replace(i,new_food)
-	return step_text
 
 def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham']
@@ -374,21 +339,6 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 	for step in direc_obj_lst:
 		step.print_dir()
 
-def transform_cuisine_asian():
-	#url = 'https://www.allrecipes.com/recipe/14054/lasagna/'
-	#url = 'https://www.allrecipes.com/recipe/220346/eggplant-and-ground-beef-lasagna/?internalSource=staff%20pick&referringId=16806&referringContentType=Recipe%20Hub'
-	url = 'https://www.allrecipes.com/recipe/232897/classic-key-lime-pie/'
-	#url = 'https://www.allrecipes.com/recipe/230103/buttery-garlic-green-beans/'
-	#url = 'https://www.allrecipes.com/recipe/12974/butternut-squash-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
-	#url = 'https://www.allrecipes.com/recipe/11679/homemade-mac-and-cheese/'
-	#url = 'https://www.allrecipes.com/recipe/76129/spinach-tomato-tortellini/'
-	#url = 'https://www.allrecipes.com/recipe/15925/creamy-au-gratin-potatoes/'
-	#url = 'https://www.allrecipes.com/recipe/23431/to-die-for-fettuccine-alfredo/'
-	#url = 'https://www.allrecipes.com/recipe/12040/spaghetti-with-marinara-sauce/'
-	#url = 'https://www.allrecipes.com/recipe/15004/award-winning-soft-chocolate-chip-cookies/?internalSource=hub%20recipe&referringId=839&referringContentType=Recipe%20Hub'
-	#url = 'https://www.allrecipes.com/recipe/56927/delicious-ham-and-potato-soup/?internalSource=hub%20recipe&referringId=94&referringContentType=Recipe%20Hub'
-	recipe = get_recipe_info(url)
+def transform_cuisine_asian(recipe):
 	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
 	transform_cuisine_main_asian(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
-
-transform_cuisine_asian()
