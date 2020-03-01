@@ -42,24 +42,26 @@ class direction:
             print("time included in step: ", self.time)
         print('\n\n')
 
+def remove_punc_lower(text):
+    return text.lower().translate(str.maketrans('', '', string.punctuation))
 
 def get_num(arr):
     num = 0
     for text in arr:
-        if not text[0].isdigit():
+        if not text[0].isdigit() or not remove_punc_lower(text).isdigit():
             return num
         if '/' in text:
             ind = text.index('/')
             top = text[:ind]
             bottom = text[ind + 1:]
             num += (int(top) / int(bottom))
-            print('BUMMMM: ', num)
         elif '.' in text:
             ind = text.index('.')
             top = text[:ind]
+            print(top)
             bottom = text[ind + 1:]
-            num += int(top) + int(bottom)/10
-            print('NUMMMM: ', num)
+            print(bottom)
+            num += int(top) + int(bottom)/10**len(bottom)
         else:
             num += float(text)
     return num

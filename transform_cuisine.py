@@ -3,7 +3,7 @@
 from main import main as get_recipe_info
 from parse import wrapper
 from parse import remove_punc_lower
-from parse import food, direction
+from parse import food, direction, get_num
 import string
 from collections import deque
 from get_key_ingredient import get_key, get_key_food
@@ -25,8 +25,9 @@ def lookup(ing, lst):
 def make_substitutions(old_food,new_food,step_text):
 	text_slt = step_text.split()
 	old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
-	old_food_slt.append("pasta")
-	old_food_slt.append("noodle")
+	if new_food == 'rice':
+		old_food_slt.append("pasta")
+		old_food_slt.append("noodle")
 	ind = 0
 	subs = []
 	rmv = []
@@ -266,6 +267,37 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 	return
 
 
+def lookup_mod(sen, lst):
+	name_lst = remove_punc_lower(sen).split()
+	for word in name_lst:
+		if word in lst:
+			return True
+		elif word[-1] == 's' and word[:-1] in lst:
+			return True
+	return False
+
+def cut_amount_mod(step_text,lst,prop):
+	def helper(sen, prop):
+		sen_lst = sen.split()
+		for ind in range(len(sen_lst)):
+			word = sen_lst[ind]
+			num = get_num([word])
+			if num != 0:
+				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['more','degree','minute', 'hour', 'second', 'to']):
+					num = str(num/prop)
+					if num[-2:] == '.0':
+						num = num[:-2]
+					sen_lst[ind] = num
+		sen = ' '.join(sen_lst)
+		return(sen)
+	step_sen = step_text.split('. ')
+	for ind in range(len(step_sen)):
+		sen = step_sen[ind]
+		if lookup_mod(sen, lst):
+			step_sen[ind] = helper(sen, prop)
+	step_text = '. '.join(step_sen)
+	return step_text
+
 def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	if recipe_obj.cuisine == "mexican" or recipe_obj.cuisine == "Mexican":
 		print("recipe is already mexican!")
@@ -311,14 +343,12 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 	meat_lst = []
 	pasta_lst = []
 
+	for direc in direc_obj_lst:
+		direc.step = cut_amount_mod(direc.step,cut_half,2)
 
 	for ing in food_obj_lst:
 		if lookup(ing, cut_half):
-		#	ing.quant = ing.quant / 2 # need to change this in directions too
-			cut_ing_amount([ing], direc_obj_lst,2)
-			for j in direc_obj_lst:
-				j.print_dir()
-			print('\n\n\n\n\n')
+			ing.quant = ing.quant / 2
 		meat_present = lookup(ing,meat)
 		pasta_present = lookup(ing,pasta)
 		if meat_present:
