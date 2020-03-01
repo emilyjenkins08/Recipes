@@ -3,7 +3,7 @@ from lxml import html
 from bs4 import BeautifulSoup
 from parse import wrapper, extract_food_info
 from transform_vegetarian import vegetarian
-from transform_healthy import healthy
+from transform_healthy import to_healthy, from_healthy
 from get_key_ingredient import get_key
 from transform_amount import double_amount, half_amount
 
@@ -98,8 +98,9 @@ if __name__ == '__main__':
     url = 'https://www.allrecipes.com/recipe/229960/shrimp-scampi-with-pasta/'
     recipe = main(url)
     #vegetarian(recipe)
-    #healthy(recipe)
+    to_healthy(recipe)
+    from_healthy(recipe)
     #get_key(recipe)
     #double_amount(recipe)
-    half_amount(recipe)
+    #half_amount(recipe)
     #print(recipe.servings)
