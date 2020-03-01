@@ -313,9 +313,12 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 
 
 	for ing in food_obj_lst:
-		#if lookup(ing, cut_half):
+		if lookup(ing, cut_half):
 		#	ing.quant = ing.quant / 2 # need to change this in directions too
-			#cut_ing_amount([ing], direc_obj_lst,2)
+			cut_ing_amount([ing], direc_obj_lst,2)
+			for j in direc_obj_lst:
+				j.print_dir()
+			print('\n\n\n\n\n')
 		meat_present = lookup(ing,meat)
 		pasta_present = lookup(ing,pasta)
 		if meat_present:
