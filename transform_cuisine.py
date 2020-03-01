@@ -360,50 +360,33 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 				ing.name = "rice"
 				food_name_lst.append("rice")
 		if remove_punc_lower(ing.name) == "basil" or remove_punc_lower(ing.name) == "basil leaves":
-			print("hello basil")
 			ing.name = "garlic powder"
 			if ing.meas != "teaspoons" and ing.meas != "tablespoons" and ing.meas != "teaspoon" and ing.meas != "tablespoon":
 				ing.quant = 2
 				ing.meas = "tbsp"
 			ing.desc = ""
 			ing.prep = ""
-			print("now ing name is ", ing.name)
-			#for diir in direc_obj_lst:
-			#	if "basil" in diir.step:
-			#		diir.step = diir.step.replace("basil","garlic powder")
 		if remove_punc_lower(ing.name) == "oregano" or remove_punc_lower(ing.name) == "oregano leaves":
-			print("hello oregano")
 			ing.name = "cumin"
 			if ing.meas != "teaspoons" and ing.meas != "tablespoons" and ing.meas != "teaspoon" and ing.meas != "tablespoon":
 				ing.quant = 2
 				ing.meas = "tbsp"
 			ing.desc = ""
 			ing.prep = ""
-			print("now ing name is ", ing.name)
-			#for diir in direc_obj_lst:
-			#	if "oregano" in diir.step:
-			#		diir.step = diir.step.replace("oregano","cumin")
 		if remove_punc_lower(ing.name) == "rosemary" or remove_punc_lower(ing.name) == "rosemary leaves":
-			print("hello rosemary")
 			ing.name = "thyme"
 			if ing.meas != "teaspoons" and ing.meas != "tablespoons" and ing.meas != "teaspoon" and ing.meas != "tablespoon":
 				ing.quant = 2
 				ing.meas = "tbsp"
 			ing.desc = ""
 			ing.prep = ""
-			print("now ing name is ", ing.name)
-			#for diir in direc_obj_lst:
-			#	if "rosemary" in diir.step:
-			#		diir.step = diir.step.replace("rosemary","thyme")
 		if remove_punc_lower(ing.name) == "parsley" or remove_punc_lower(ing.name) == "parsley leaves":
-			print("hello parlsey")
 			ing.name = "chili powder"
 			if ing.meas != "teaspoons" and ing.meas != "tablespoons" and ing.meas != "teaspoon" and ing.meas != "tablespoon":
 				ing.quant = 2
 				ing.meas = "tbsp"
 			ing.desc = ""
 			ing.prep = ""
-			print("now ing name is ", ing.name)
 		for diir in direc_obj_lst:
 			if "parsley" in diir.step:
 				diir.step = diir.step.replace("parsley","chili powder")
@@ -627,7 +610,6 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 
 			added = False
 			for step in direc_obj_lst:
-				print(step.step)
 				if "cream" in step.step and "sour cream" not in step.step:
 					step.step = step.step.replace("cream","mexican seasoning")
 					for ingrr in step.ingredient:

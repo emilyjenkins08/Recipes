@@ -58,9 +58,7 @@ def get_num(arr):
         elif '.' in text:
             ind = text.index('.')
             top = text[:ind]
-            print(top)
             bottom = text[ind + 1:]
-            print(bottom)
             num += int(top) + int(bottom)/10**len(bottom)
         else:
             num += float(text)
