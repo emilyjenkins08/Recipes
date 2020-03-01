@@ -83,23 +83,23 @@ def lookup_mod(sen, lst):
 	return False
 
 def cut_amount(step_text):
-	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'sugar', 'buttermilk']
+	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'sugar', 'buttermilk','cheese','cream']
 	cut_fourth = ['salt']
 	def helper(sen, prop):
 		sen_lst = sen.split()
 		#print("GOT SENTENCE: ", sen)
 		for ind in range(len(sen_lst)):
 			word = sen_lst[ind]
-			num = get_num(word)
+			num = get_num([word])
 			if num != 0:
-				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['minute', 'hour', 'second', 'to']):
+				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['more','degree','minute', 'hour', 'second', 'to']):
 					num = str(num/prop)
 					if num[-2:] == '.0':
 						num = num[:-2]
 					sen_lst[ind] = num
 		sen = ' '.join(sen_lst)
 		return(sen)
-	step_sen = step_text.split('.')
+	step_sen = step_text.split('. ')
 	for ind in range(len(step_sen)):
 		sen = step_sen[ind]
 		if lookup_mod(sen, cut_half):
@@ -109,9 +109,9 @@ def cut_amount(step_text):
 	step_text = '. '.join(step_sen)
 	return step_text
 
-def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
+def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	#basic lists to cycle through to make changes
-	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'buttermilk']
+	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'buttermilk', 'cheese','cream']
 	cut_fourth = ['salt']
 	low_fat = ['milk','cheese','cream','yogurt']
 	whole_grain = ['pasta','bread','rice']
@@ -132,14 +132,14 @@ def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_l
 			meat_name_lst.append(other_meat)
 		replace_meat = lookup(ing, bad_meat)
 		if replace_meat	:
-			ing.name = 'turkey'
-			subs.append([replace_meat, 'turkey'])
+			ing.name = 'chicken breast'
+			subs.append([replace_meat, 'chicken breast'])
 			add_trim = True
 			meat_name_lst.append(ing.name)
 		#substituion for oil
 		if 'oil' in ing.name.lower():
-			subs.append([ing.name, 'olive oil'])
-			ing.name = 'olive oil'
+			subs.append([ing.name, 'extra-virigin olive oil'])
+			ing.name = 'extra-virgin olive oil'
 		if 'ranch' in ing.name.lower():
 			subs.append([ing.name, 'italian dressing'])
 			ing.name = 'italian dressing'
@@ -154,6 +154,9 @@ def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_l
 			ing.name = 'low fat ' + ing.name
 			continue
 		if 'mayo' in ing.name.lower():
+			subs.append([ing.name, 'low fat greek yogurt'])
+			ing.name = 'low fat greek yogurt'
+		if 'cream' in ing.name.lower() and 'cheese' not in ing.name.lower():
 			subs.append([ing.name, 'low fat greek yogurt'])
 			ing.name = 'low fat greek yogurt'
 		if lookup(ing, whole_grain):
@@ -188,13 +191,97 @@ def make_healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_l
 		direc.step = direc.step.replace(' Fry', 'Sauté')
 		direc.step = direc.step.replace(' fried', 'sautéd')
 		direc.step = direc.step.replace(' Fried', 'Sautéd')
+		for n, i in enumerate(direc.method):
+			if i == 'fry':
+				direc.method[n] = 'saute'
 	for ing in food_obj_lst:
 		ing.print_food()
 	for step in direc_obj_lst:
 		step.print_dir()
 	return
 
-def healthy(recipe):
+
+def cut_amount_mod(step_text):
+	double_it = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'sugar', 'buttermilk','cheese','cream','salt']
+	def helper(sen, prop):
+		sen_lst = sen.split()
+		for ind in range(len(sen_lst)):
+			word = sen_lst[ind]
+			num = get_num([word])
+			if num != 0:
+				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['more','degree','minute', 'hour', 'second', 'to']):
+					num = str(num/prop)
+					if num[-2:] == '.0':
+						num = num[:-2]
+					sen_lst[ind] = num
+		sen = ' '.join(sen_lst)
+		return(sen)
+	step_sen = step_text.split('. ')
+	for ind in range(len(step_sen)):
+		sen = step_sen[ind]
+		if lookup_mod(sen, double_it):
+			step_sen[ind] = helper(sen, .5)
+		else:
+			step_sen[ind] = helper(sen, .75)
+	step_text = '. '.join(step_sen)
+	return step_text
+
+
+def unhealthy(recipe_obj, food_obj_lst, direc_obj_lst, methods_lst):
+	#basic lists to cycle through to make changes
+	double = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'buttermilk', 'cheese','cream','salt']
+	remove_arr = ['low fat','Low fat','low-fat','Low-fat','whole grain','Whole grain','Multi-grain','multi-grain','lean','Lean','low sodium','Low sodium']
+	#initalize substitution list for making changes in the directions in reference to foods
+	subs = []
+
+	for ing in food_obj_lst:
+		if 'oil' in ing.name.lower():
+			subs.append([ing.name, 'vegetabel oil'])
+			ing.name = 'vegetabel oil'
+		if 'dressing' in ing.name.lower():
+			subs.append([ing.name, ranch])
+			ing.name = 'ranch'
+		if 'yogurt' in ing.name.lower():
+			subs.append([ing.name, 'cream'])
+			ing.name = 'cream'
+		###going through the other lists and seeing if chances have to be made
+		if lookup(ing, double): #or other_meat or replace_meat:
+			ing.quant = ing.quant / .5
+			continue
+		for i in remove_arr:
+			ing.name = ing.name.replace(i, '')
+		ing.name.replace('  ',' ')
+		if 'milk' in ing.name.lower():
+			subs.append([ing.name, 'whole milk'])
+			ing.name = 'whole milk'
+	for direc in direc_obj_lst:
+		for sub in subs:
+			direc.step = make_substitutions(sub[0],sub[1],direc.step)
+			if sub[0] in direc.ingredient:
+				direc.ingredient[direc.ingredient.index(sub[0])] = sub[1]
+		direc.step = cut_amount_mod(direc.step)
+		sau_to_fry = [[' sautéd', 'fried'],[' Sautéd', 'Fried'],[' sauté','fry'],[' Sauté', 'Fry'],[' Sauted', ' Fried'], [' sauted', ' fried'],[' saute',' fry'],[' Saute', ' Fry']]
+		for i in sau_to_fry:
+			direc.step = direc.step.replace(i[0],i[1])
+		for i in remove_arr:
+			direc.step = direc.step.replace(i, '')
+		direc.step = direc.step.replace('  ',' ')
+		for n, i in enumerate(direc.method):
+			if i == 'saute' or i == 'sauté':
+				direc.method[n] = 'fry'
+	for ing in food_obj_lst:
+		ing.print_food()
+	for step in direc_obj_lst:
+		step.print_dir()
+	return
+
+def to_healthy(recipe):
 	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
 	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
-	make_healthy(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+	healthy(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+
+
+def from_healthy(recipe):
+	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
+	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
+	unhealthy(recipe, food_lst, direc_lst, methods_lst)

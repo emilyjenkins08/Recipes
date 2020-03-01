@@ -42,11 +42,13 @@ class direction:
             print("time included in step: ", self.time)
         print('\n\n')
 
+def remove_punc_lower(text):
+    return text.lower().translate(str.maketrans('', '', string.punctuation))
 
 def get_num(arr):
     num = 0
     for text in arr:
-        if not text[0].isdigit():
+        if not text[0].isdigit() or not remove_punc_lower(text).isdigit():
             return num
         if '/' in text:
             ind = text.index('/')
@@ -57,7 +59,7 @@ def get_num(arr):
             ind = text.index('.')
             top = text[:ind]
             bottom = text[ind + 1:]
-            num += int(top) + int(bottom)/10
+            num += int(top) + int(bottom)/10**len(bottom)
         else:
             num += float(text)
     return num
@@ -209,8 +211,6 @@ def extract_food_info(ing_lst):
             if pair[0] != 0 and pair[1]:
                 quant = pair[0]
                 meas = pair[1]
-        if 'apple' in item:
-            print('1',name)
         if '(' in name and ')' in name:
             #modify name to get rid of parentheses
             name = name.replace(name[name.index('('):name.index(')')+1], "")
@@ -257,7 +257,7 @@ def extract_directional_info(steps, ingredient_lst):
     tools = ["pot", "pan", "oven", "oven rack", "broiler", "skillet", "saute pan", "bowl", "plate", "tongs", "fork",
              "whisk", "microwave", "baking dish", "dish"]
     times = ["minute", "hour", "second"]
-    methods = ["saute", "broil", "boil", "poach", "cook", "whisk", "bake", "stir", "mix", "preheat", "set", "heat",
+    methods = ["saute", 'sauté', "broil", "boil", "fry", "fried", "poach", "cook", "whisk", "bake", "stir", "mix", "preheat", "set", "heat",
                "add", "remove", "place", "grate", "shake", "stir", "crush", "squeeze", "beat", "toss", "top",
                "sprinkle", "chop ", "dice", "mince", "cut", "drain", "coat", "serve", "combine", "marinate", "transfer",
                "layer", "microwave", "spoon", "pour", "season", 'shell', 'thaw', 'shuck', 'devein','roast']

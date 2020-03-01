@@ -7,7 +7,7 @@ def cut_dir_amount(step_text,prop):
 		#print("GOT SENTENCE: ", sen)
 		for ind in range(len(sen_lst)):
 			word = sen_lst[ind]
-			num = get_num(word)
+			num = get_num([word])
 			if num != 0:
 				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['more','degree', 'minute', 'hour', 'second', 'to']):
 					num = str(num/prop)
@@ -16,7 +16,7 @@ def cut_dir_amount(step_text,prop):
 					sen_lst[ind] = num
 		sen = ' '.join(sen_lst)
 		return(sen)
-	step_sen = step_text.split('.')
+	step_sen = step_text.split('. ')
 	for ind in range(len(step_sen)):
 		sen = step_sen[ind]
 		step_sen[ind] = helper(sen, prop)
