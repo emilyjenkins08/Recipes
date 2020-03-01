@@ -2,7 +2,7 @@ import requests
 from lxml import html
 from bs4 import BeautifulSoup
 from parse import wrapper, extract_food_info
-from transform_vegetarian import vegetarian
+from transform_vegetarian import to_vegetarian
 from transform_healthy import to_healthy, from_healthy
 from get_key_ingredient import get_key
 from transform_amount import double_amount, half_amount
@@ -137,19 +137,19 @@ if __name__ == '__main__':
             continue
         if case == '3':
             print('Printing Transformed Recipe...\n')
-            vegetarian(recipe_obj)
+            to_vegetarian(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '4':
             print('Printing Transformed Recipe...\n')
-            vegetarian(recipe_obj)
+            to_vegetarian(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '5':
             print('Printing Transformed Recipe...\n')
-            vegetarian(recipe_obj)
+            to_vegetarian(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue

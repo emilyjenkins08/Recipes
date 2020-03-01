@@ -1,48 +1,54 @@
-from transform_vegetarian import vegetarian
+from transform_vegetarian import to_vegetarian
 from parse import food
+from transform_healthy import make_substitutions
 
-soy_milk = food("soy_milk", 1, "cup", [], [])
-vegan_cheese = food("vegan_cheese", 1, "cup", [], [])
-banana = food("banana", .25, "cup", ["mashed"], [])
-vegetable_broth = food("vegetable broth", 1, "cup", [], [])
-olive_oil = food("olive oil", 1, "tablespoon", [], [])
-soy_yogurt = food("soy yogurt", 1, "cup", ["plain"], [])
-vegan_sour_cream = food()
-vegan_mayo = food()
-agar_powder = food()
-maple_syrup = food()
-vegan_cream_cheese = food()
-non_dairy_choc = food()
-soy_ice_cream = food()
-coconut_cream = food()
 
-SUBS = {"milk": soy_milk,
-        "cream cheese": vegan_cream_cheese,
-        "cream": coconut_cream,
-        "cheese": vegan_cheese,
-        "egg": banana,
-        "broth": vegetable_broth,
-        "stock": vegetable_broth,
-        "butter": olive_oil,
-        "yogurt": soy_yogurt,
-        "sour cream": vegan_sour_cream,
-        "mayonaisse": vegan_mayo,
-        "gelatin": agar_powder,
-        "honey": maple_syrup,
-        "chocolate": non_dairy_choc,
-        "ice cream": soy_ice_cream,
+SUBS = {"milk": "soy milk",
+        "cream cheese": "vegan cream cheese",
+        "cottage cheese": "silken tofu",
+        "ice cream": "soy ice cream",
+        "cream": "coconut cream",
+        "cheese": "vegan cheese",
+        "egg": "bananas",
+        "chicken broth": "vegetable broth",
+        "chicken stock": "vegetable broth",
+        "beef broth": "vegetable broth",
+        "beef stock": "vegetable broth",
+        "butter": "olive oil",
+        "yogurt": "soy yogurt",
+        "sour cream": "vegan sour cream",
+        "mayonaisse": "vegan mayo",
+        "gelatin": "agar powder",
+        "honey": "maple syrup",
+        "chocolate": "non-dairy chocolate",
         }
 
 
-def sub_food(recipe, food, sub):
-    return recipe
-
-
-def vegan(recipe):
-    ingredients, ingredient_info, directions, master_tools, master_methods = vegetarian(recipe)
+def to_vegan(recipe):
+    ingredient_info, directions = to_vegetarian(recipe)
     for non_vegan in SUBS.keys():
-        for ing in ingredient_info:
-            if non_vegan in ing.name:
-                recipe = sub_food(recipe, ing, SUBS[non_vegan])
-    return recipe
+        for dir in directions:
+            for ing in dir.ingredients:
+                if non_vegan in ing.name and SUBS[non_vegan] not in ing.name:
+                    recipe = make_substitutions(recipe, ing, SUBS[non_vegan])
+                    dir.ingredients.remove(ing)
+                    ingredient_info.remove(ing)
+                    sub_name = SUBS[non_vegan]
+                    if sub_name not in ["bananas", "silken tofu"]:
+                        sub_quant = ing.quant
+                        sub_meas = ing.meas
+                        sub_prep = ing.prep
+                    elif sub_name == "bananas":
+                        sub_quant = ing.quant * .25
+                        sub_meas = "cups"
+                        sub_prep = ["mashed"]
+                    else:
+                        sub_quant = ing.quant
+                        sub_meas = ing.meas
+                        sub_prep = ["mashed"]
+                    sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
+                    dir.ingredients.append(sub.name)
+                    ingredient_info.append(sub)
+
+
 

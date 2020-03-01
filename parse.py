@@ -42,8 +42,10 @@ class direction:
             print("time included in step: ", self.time)
         print('\n\n')
 
+
 def remove_punc_lower(text):
     return text.lower().translate(str.maketrans('', '', string.punctuation))
+
 
 def get_num(arr):
     num = 0
@@ -59,20 +61,21 @@ def get_num(arr):
             ind = text.index('.')
             top = text[:ind]
             bottom = text[ind + 1:]
-            num += int(top) + int(bottom)/10**len(bottom)
+            num += int(top) + int(bottom) / 10 ** len(bottom)
         else:
             num += float(text)
     return num
 
+
 def get_meas(wrd_lst):
     better_measurements = ['bunch', 'clove', 'cup', 'ounce', 'pinch', 'pint', 'pound', 'teaspoon',
-                    'tablespoon']
+                           'tablespoon']
     for i in wrd_lst:
         if i in better_measurements:
             return i
         else:
             if i[-1] == 's' and i[:-1] in better_measurements:
-                    return i
+                return i
     return False
 
 
@@ -82,9 +85,10 @@ def fix_name(name, prep_lst, des_lst):
         for i in str_lst:
             if i in lst:
                 return i
-            elif i[-1] in [',','.',';','-']:
+            elif i[-1] in [',', '.', ';', '-']:
                 return i
         return False
+
     other_lst = ['and', 'into', 'to', 'for', 'while']
     prep_bool = lookup(name, prep_lst)
     while prep_bool:
@@ -107,15 +111,15 @@ def fix_name(name, prep_lst, des_lst):
     return name
 
 
-
 def extract_food_info(ing_lst):
-    preparation = ['beaten', 'boneless','chopped', 'cooked', 'condensed', 'crushed', 'cut', 'cubed','cored', 'deveined', 'diced',
+    preparation = ['beaten', 'boneless', 'chopped', 'cooked', 'condensed', 'crushed', 'cut', 'cubed', 'cored',
+                   'deveined', 'diced',
                    'divided', 'drained', 'finely', 'grated', 'juiced', 'minced', 'peeled', 'rinsed', 'seeded',
                    'shredded', 'skinless', 'sliced', 'steamed', 'uncooked', 'shelled', 'thawed', 'shucked']
     description = ['dried', 'fresh', 'freshly', 'large', 'medium', 'seasoned', 'small', 'thinly', 'unopened',
                    'undrained', 'ground', 'spicy', 'bone-in', 'chilled']
     measurements = ['bunch', 'can', 'clove', 'cup', 'ounce', 'package', 'pinch', 'pint', 'pound', 'teaspoon',
-                    'tablespoon', 'container','dash','quart']
+                    'tablespoon', 'container', 'dash', 'quart']
 
     food_lst = []
     food_name_lst = []
@@ -165,9 +169,9 @@ def extract_food_info(ing_lst):
             if wrd in preparation:
                 prep_found = True
                 prep_lst.append(wrd)
-                #if end <= i:
+                # if end <= i:
                 #    end = len(slt)
-                #start = max(start,i+1)
+                # start = max(start,i+1)
             else:
                 if wrd[-1] == ',':
                     if wrd[:-1] in preparation:
@@ -175,7 +179,7 @@ def extract_food_info(ing_lst):
                         prep_lst.append(wrd[:-1])
                         if end <= i:
                             end = len(slt)
-                        #start = max(start,i+1)
+                        # start = max(start,i+1)
 
             if not prep_found:
                 if wrd in description:
@@ -193,27 +197,20 @@ def extract_food_info(ing_lst):
         j, start = 0, 0
         while j < len(name):
             if name[j] in preparation or name[j] in description:
-                #start = max(start, j + 1)
+                # start = max(start, j + 1)
                 pass
             j += 1
         name = ' '.join(name[start:])
         if name[-1] == ',':
             name = name[:-1]
         if 'apple' in item:
-            print('3',name)
+            print('3', name)
         name = fix_name(name, preparation, description)
         if 'apple' in item:
-            print('2',name)
+            print('2', name)
         if '(' in item and ')' in item:
-            #extract possible quant and meas that might be in the parentheses
-            possible_quant = item[item.index('('):item.index(')')+1][1:-1]
-            pair = [get_num(possible_quant.split()),get_meas(possible_quant.split())]
-            if pair[0] != 0 and pair[1]:
-                quant = pair[0]
-                meas = pair[1]
-        if '(' in name and ')' in name:
-            #modify name to get rid of parentheses
-            name = name.replace(name[name.index('('):name.index(')')+1], "")
+            # modify name to get rid of parentheses
+            name = name.replace(name[name.index('('):name.index(')') + 1], "")
             if name[-1] == " ":
                 name = name[:-1]
             if name[0] == " ":
@@ -257,10 +254,11 @@ def extract_directional_info(steps, ingredient_lst):
     tools = ["pot", "pan", "oven", "oven rack", "broiler", "skillet", "saute pan", "bowl", "plate", "tongs", "fork",
              "whisk", "microwave", "baking dish", "dish"]
     times = ["minute", "hour", "second"]
-    methods = ["saute", 'sauté', "broil", "boil", "fry", "fried", "poach", "cook", "whisk", "bake", "stir", "mix", "preheat", "set", "heat",
+    methods = ["saute", 'sauté', "broil", "boil", "fry", "fried", "poach", "cook", "whisk", "bake", "stir", "mix",
+               "preheat", "set", "heat",
                "add", "remove", "place", "grate", "shake", "stir", "crush", "squeeze", "beat", "toss", "top",
                "sprinkle", "chop ", "dice", "mince", "cut", "drain", "coat", "serve", "combine", "marinate", "transfer",
-               "layer", "microwave", "spoon", "pour", "season", 'shell', 'thaw', 'shuck', 'devein','roast']
+               "layer", "microwave", "spoon", "pour", "season", 'shell', 'thaw', 'shuck', 'devein', 'roast']
     direc_lst = []
     master_methods = []
     master_tools = []
