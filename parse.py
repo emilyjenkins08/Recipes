@@ -1,5 +1,20 @@
 import string
 
+class recipe:
+    def __init__(self, name, ingredient_groups, ingredients, directions, cuisine, servings):
+        self.name = name
+        self.ingredient_groups = ingredient_groups
+        self.ingredients = ingredients
+        self.directions = directions
+        self.cuisine = cuisine
+        self.servings = servings
+
+    def print_recipe(self):
+        print("Name: ", self.name.title())
+        if self.cuisine:
+            print("Cuisine: ", self.cuisine)
+        if self.servings:
+            print("Servings: ", self.servings)
 
 class food:
     def __init__(self, name, quant, meas, desc, prep):
@@ -11,15 +26,15 @@ class food:
 
     def print_food(self):
         print("Name: ", self.name)
-        if self.quant:
-            print("Quantity: ", self.quant)
-        if self.meas:
-            print("Measurement: ", self.meas)
+        if self.quant and self.meas:
+            print("Amount: ", round(self.quant,3), " ", self.meas)
+        elif self.quant:
+            print("Amount: ", round(self.quant,3))
         if self.desc:
             print("Description: ", self.desc)
         if self.prep:
             print("Preparation: ", self.prep)
-        print('\n\n')
+        print('\n')
 
 
 class direction:
@@ -31,16 +46,19 @@ class direction:
         self.time = time
 
     def print_dir(self):
-        print("step: ", self.step)
+        print("Step: ", self.step)
         if self.ingredient != []:
-            print("Ingredients involved: ", self.ingredient)
+            print("Ingredients Involved: ", self.ingredient)
         if self.method != []:
-            print("methods used: ", self.method)
+            str = ", ".join(self.method)
+            print("Methods Used: ", str)
         if self.tool != []:
-            print("tools used: ", self.tool)
+            str = ", ".join(self.tool)
+            print("Tools Used: ", str)
         if self.time != []:
-            print("time included in step: ", self.time)
-        print('\n\n')
+            str = ", ".join(self.time)
+            print("Time Included in Step: ", str)
+        print('\n')
 
 def remove_punc_lower(text):
     return text.lower().translate(str.maketrans('', '', string.punctuation))
@@ -165,9 +183,6 @@ def extract_food_info(ing_lst):
             if wrd in preparation:
                 prep_found = True
                 prep_lst.append(wrd)
-                #if end <= i:
-                #    end = len(slt)
-                #start = max(start,i+1)
             else:
                 if wrd[-1] == ',':
                     if wrd[:-1] in preparation:
@@ -175,8 +190,6 @@ def extract_food_info(ing_lst):
                         prep_lst.append(wrd[:-1])
                         if end <= i:
                             end = len(slt)
-                        #start = max(start,i+1)
-
             if not prep_found:
                 if wrd in description:
                     desc_lst.append(wrd)
@@ -192,9 +205,6 @@ def extract_food_info(ing_lst):
         name = slt[start:end + 1]
         j, start = 0, 0
         while j < len(name):
-            if name[j] in preparation or name[j] in description:
-                #start = max(start, j + 1)
-                pass
             j += 1
         name = ' '.join(name[start:])
         if name[-1] == ',':
@@ -290,7 +300,11 @@ def extract_directional_info(steps, ingredient_lst):
                 while start > 0 and new_step[start] != " ":
                     digits = new_step[start] + digits
                     start -= 1
-                times_included.append(digits + " " + time)
+                if int(digits) > 1:
+                    str = time + 's'
+                else:
+                    str = time
+                times_included.append(digits + " " + str)
         direc_lst.append(
             direction(step.replace("Watch Now", ""), ingredients_used, methods_used, tools_needed, times_included))
     return direc_lst, master_tools, master_methods
@@ -300,3 +314,31 @@ def wrapper(ing_lst, step_lst):
     food_lst, food_name_lst = extract_food_info(ing_lst)
     direc_lst, master_tools, master_methods = extract_directional_info(step_lst, food_name_lst)
     return food_lst, food_name_lst, direc_lst, master_tools, master_methods
+
+
+def make_recipe_obj(recipe_obj, food_obj_lst, direc_obj_lst):
+    name = recipe_obj.name
+    ingredient_groups = recipe_obj.ingredient_groups
+    directions = [direc.step for direc in direc_obj_lst]
+    cuisine = recipe_obj.cuisine
+    servings = recipe_obj.servings
+
+    #get ingredients
+    ingredients = []
+    for i in food_obj_lst:
+        ing = ''
+        if i.quant:
+            ing += str(i.quant) + " "
+        if i.meas:
+            ing += str(i.meas) + " "
+        if i.name:
+            ing += str(i.name) + ", "
+        if i.desc:
+            ing += str(i.desc) + " "
+        if i.prep:
+            ing += str(i.prep) + " "
+        while ing[-1] == "," or ing[-1] == " ":
+            ing = ing[:-1]
+        ingredients.append(ing)
+
+    return recipe(name,ingredient_groups,ingredients,directions,cuisine,servings)
