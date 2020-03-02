@@ -145,6 +145,8 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 	direc_obj_lst = new_direc_obj_lst
 
 	recipe_obj.servings = 4
+	recipe_obj.cuisine = "Asian"
+	recipe_obj.name += " transformed into Asian"
 
 	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
@@ -198,6 +200,8 @@ def transform_dessert_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_l
 	direc_obj_lst = new_direc_obj_lst
 
 	recipe_obj.servings = 4
+	recipe_obj.cuisine = "Asian"
+	recipe_obj.name += " transformed into Asian"
 
 	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
@@ -250,16 +254,16 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 	new_food_name_lst.append("vegetable oil")
 
 	new_food_lst.append(food("garlic", 2,"cloves","","chopped"))
-	new_food_name_lst.append("oil")
+	new_food_name_lst.append("garlic")
 
 	new_food_lst.append(food("broccoli", 1,"cup","","chopped"))
-	new_food_name_lst.append("oil")
+	new_food_name_lst.append("brocoli")
 
 	new_food_lst.append(food("green bell pepper", 1,"cup","","sliced"))
-	new_food_name_lst.append("oil")
+	new_food_name_lst.append("green bell pepper")
 
 	new_food_lst.append(food("carrots", 1,"cup","","sliced"))
-	new_food_name_lst.append("oil")
+	new_food_name_lst.append("carrots")
 
 	new_food_lst.append(food("napa cabbage", 1,"cup","","sliced"))
 	new_food_name_lst.append("napa cabbage")
@@ -318,6 +322,8 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 	direc_obj_lst = new_direc_obj_lst
 
 	recipe_obj.servings = 4
+	recipe_obj.cuisine = "Asian"
+	recipe_obj.name += " transformed into Asian"
 	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
 def transform_cuisine_asian(recipe_obj):

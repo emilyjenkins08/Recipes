@@ -235,7 +235,7 @@ def unhealthy(recipe_obj, food_obj_lst, direc_obj_lst, methods_lst):
 			subs.append([ing.name, 'vegetable oil'])
 			ing.name = 'vegetable oil'
 		if 'dressing' in ing.name.lower():
-			subs.append([ing.name, ranch])
+			subs.append([ing.name, "ranch"])
 			ing.name = 'ranch'
 		if 'yogurt' in ing.name.lower():
 			subs.append([ing.name, 'cream'])

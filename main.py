@@ -8,6 +8,7 @@ from get_key_ingredient import get_key
 from transform_amount import double_amount, half_amount
 from transform_cuisine import transform_cuisine as transform_to_mexican
 from transform_asian import transform_cuisine_asian as transform_to_asian
+from transform_indian import transform_cuisine_indian as transform_to_indian
 
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
             'Persian', 'Filipino', 'Indonesian', 'Malaysian', 'Vietnamese', 'Asian', 'Caribbean', 'South American',
@@ -123,7 +124,7 @@ if __name__ == '__main__':
     case = '0'
     url = ''
     recipe_obj = None
-    arr = ['0','1','2','3','4','5','6','7','8','9','10','11','12']
+    arr = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13']
     while case in arr:
         if case == '0':
             url = input('Enter Valid URL from AllRecipes: ')
@@ -131,92 +132,99 @@ if __name__ == '__main__':
                 recipe_obj = main(url)
                 print('\nPrinting Parsed Recipe...\n')
                 print_information(recipe_obj)
-                case = '12'
+                case = '13'
                 continue
             except:
                 case = '0'
                 print('URL was not valid...')
                 continue
-        if case == '12':
+        if case == '13':
             print('\nWhich transformation would you like to perform now?\n\nPlease enter the appropiate number...')
-            print('\n1: Tranform to healthy\n2: Transform to unhealthy\n3: Transform to Vegetarian\n4: Transform to Non-Vegetarian\n5: Transform to Vegan\n6: Make it for double the people\n7: Make it for half the people\n8: Transform to Mexican Style\n9: Transform to Asian Stylye\n10: Try a different recipe\n11: Exit')
+            print('\n1: Tranform to healthy\n2: Transform to unhealthy\n3: Transform to Vegetarian\n4: Transform to Non-Vegetarian\n5: Transform to Vegan\n6: Make it for double the people\n7: Make it for half the people\n8: Transform to Mexican Style\n9: Transform to Asian Style\n10: Transform to Indian Style\n11: Try a different recipe\n12: Exit')
             case = input('Enter number here: ')
             if case not in arr:
                 print('Invalid Input...\n')
-                case = '12'
+                case = '13'
                 continue
         if case == '1':
             print('Printing Transformed Recipe...\n')
             recipe_obj = to_healthy(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '2':
             print('Printing Transformed Recipe...\n')
             recipe_obj = from_healthy(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '3':
             print('Printing Transformed Recipe...\n')
             #recipe_obj = vegetarian(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '4':
             print('Printing Transformed Recipe...\n')
             #recipe_obj = vegetarian(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '5':
             print('Printing Transformed Recipe...\n')
             #recipe_obj = vegetarian(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '6':
             print('Printing Transformed Recipe...\n')
             recipe_obj = double_amount(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '7':
             print('Printing Transformed Recipe...\n')
             recipe_obj = half_amount(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '1':
             print('Printing Transformed Recipe...\n')
             recipe_obj = to_healthy(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '8':
             print('Printing Transformed Recipe...\n')
             recipe_obj = transform_to_mexican(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
-            case = '12'
+            case = '13'
             continue
         if case == '9':
             print('Printing Transformed Recipe...\n')
             recipe_obj = transform_to_asian(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transformed')
-            case = '12'
+            case = '13'
             continue
         if case == '10':
-            case = '0'
+            print('Printing Transformed Recipe...\n')
+            recipe_obj = transform_to_indian(recipe_obj)
+            print_information(recipe_obj)
+            print('\nRecipe Transformed')
+            case = '13'
             continue
         if case == '11':
+            case = '0'
+            continue
+        if case == '12':
             break
