@@ -21,7 +21,7 @@
         - Replace cream, whole milk, sour cream with skim milk, low-fat yogurt
 """
 
-from parse import extract_food_info, extract_directional_info, food, direction, get_num
+from parse import extract_food_info, extract_directional_info, food, direction, get_num, make_recipe_obj
 import string
 from collections import deque
 
@@ -52,7 +52,6 @@ def make_substitutions(old_food, new_food, step_text):
     rmv = []
     while ind < len(text_slt):
         wrd = text_slt[ind]
-        # print("Word: ", wrd)
         wrd_mod = remove_punc_lower(wrd)
         if wrd_mod in old_food_slt:
             rmv.append(wrd)
@@ -138,7 +137,7 @@ def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, m
 			meat_name_lst.append(ing.name)
 		#substituion for oil
 		if 'oil' in ing.name.lower():
-			subs.append([ing.name, 'extra-virigin olive oil'])
+			subs.append([ing.name, 'extra-virgin olive oil'])
 			ing.name = 'extra-virgin olive oil'
 		if 'ranch' in ing.name.lower():
 			subs.append([ing.name, 'italian dressing'])
@@ -178,7 +177,7 @@ def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, m
 		trim_fat = direction('Prep the ' + meat_name + ' by trimming the fat and removing the skin.',meat_name_lst,[],[],[])
 		direc_obj_q.appendleft(trim_fat)
 		direc_obj_lst = list(direc_obj_q)
-	
+
 	#making food substitutions to the directions list
 	#print(subs)
 	for direc in direc_obj_lst:
@@ -194,11 +193,8 @@ def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, m
 		for n, i in enumerate(direc.method):
 			if i == 'fry':
 				direc.method[n] = 'saute'
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
-	return
+
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
 
 def cut_amount_mod(step_text):
@@ -236,8 +232,8 @@ def unhealthy(recipe_obj, food_obj_lst, direc_obj_lst, methods_lst):
 
 	for ing in food_obj_lst:
 		if 'oil' in ing.name.lower():
-			subs.append([ing.name, 'vegetabel oil'])
-			ing.name = 'vegetabel oil'
+			subs.append([ing.name, 'vegetable oil'])
+			ing.name = 'vegetable oil'
 		if 'dressing' in ing.name.lower():
 			subs.append([ing.name, ranch])
 			ing.name = 'ranch'
@@ -269,19 +265,16 @@ def unhealthy(recipe_obj, food_obj_lst, direc_obj_lst, methods_lst):
 		for n, i in enumerate(direc.method):
 			if i == 'saute' or i == 'sauté':
 				direc.method[n] = 'fry'
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
-	return
 
-def to_healthy(recipe):
-	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
-	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
-	healthy(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
+
+def to_healthy(recipe_obj):
+	food_lst, food_name_lst = extract_food_info(recipe_obj.ingredients)
+	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe_obj.directions, food_name_lst)
+	return healthy(recipe_obj, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
 
 
-def from_healthy(recipe):
-	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
-	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
-	unhealthy(recipe, food_lst, direc_lst, methods_lst)
+def from_healthy(recipe_obj):
+	food_lst, food_name_lst = extract_food_info(recipe_obj.ingredients)
+	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe_obj.directions, food_name_lst)
+	return unhealthy(recipe_obj, food_lst, direc_lst, methods_lst)

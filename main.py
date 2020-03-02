@@ -1,7 +1,7 @@
 import requests
 from lxml import html
 from bs4 import BeautifulSoup
-from parse import wrapper, extract_food_info
+from parse import wrapper, extract_food_info, extract_directional_info
 from transform_vegetarian import vegetarian
 from transform_healthy import to_healthy, from_healthy
 from get_key_ingredient import get_key
@@ -28,18 +28,11 @@ class recipe:
         self.servings = servings
 
     def print_recipe(self):
-        print("Name: ", self.name)
-        if self.ingredient_groups:
-            print("Ingredient groups: ", self.ingredient_groups)
-        if self.ingredients:
-            print("Ingredients: ", self.ingredients)
-        if self.directions:
-            print("Directions: ", self.directions)
+        print("Name: ", self.name.title())
         if self.cuisine:
             print("Cuisine: ", self.cuisine)
         if self.servings:
             print("Servings: ", self.servings)
-        print('\n\n')
 
 
 def parse_ingredients(soup):
@@ -83,6 +76,35 @@ def parse_name(soup):
     name = soup.find("h1", {"id": "recipe-main-content"}).text
     return name.lower()
 
+def print_information(recipe_obj):
+    recipe_obj.print_recipe()
+    print("\n")
+    food_lst, food_name_lst, direc_lst, master_tools, master_methods = wrapper(recipe_obj.ingredients,recipe_obj.directions)
+
+    #extract methods
+    primary_methods = ['saute','sauté','broil','boil','fry','fried','poach','bake','roast']
+    primary_methods_present = []
+    secondary_methods_present = []
+    for method in master_methods:
+        if method in primary_methods:
+            primary_methods_present.append(method)
+        else:
+            secondary_methods_present.append(method)
+    print("Primary Methods Used: ", ", ".join(primary_methods_present))
+    print("Secondary Methods Used: ", ", ".join(secondary_methods_present))
+
+    #print tools
+    print("Tools Used: ", ", ".join(master_tools))
+    print("\n")
+    print("Ingredients:")
+    for food in food_lst:
+        food.print_food()
+
+    for direc in direc_lst:
+        direc.print_dir()
+
+    return
+
 
 def main(url):
     website_url = requests.get(url).text
@@ -107,8 +129,8 @@ if __name__ == '__main__':
             url = input('Enter Valid URL from AllRecipes: ')
             try:
                 recipe_obj = main(url)
-                print('\nPrinting parsed Recipe...')
-                #print_recipe_obj(recipe)
+                print('\nPrinting Parsed Recipe...\n')
+                print_information(recipe_obj)
                 case = '12'
                 continue
             except:
@@ -117,7 +139,7 @@ if __name__ == '__main__':
                 continue
         if case == '12':
             print('\nWhich transformation would you like to perform now?\n\nPlease enter the appropiate number...')
-            print('\n1: Tranform to healthy\n2: Transform to unhealthy\n3: Transform to Vegetarian\n4: Transform to Non-Vegetarian\n5: Transform to Vegan\n6: Make it for double the people\n7: Make it for half the people\n8: Transform to Mexican Style\n9: Transform to Asian Stylye\n10: Try a differnt recipe\n11: Exit')
+            print('\n1: Tranform to healthy\n2: Transform to unhealthy\n3: Transform to Vegetarian\n4: Transform to Non-Vegetarian\n5: Transform to Vegan\n6: Make it for double the people\n7: Make it for half the people\n8: Transform to Mexican Style\n9: Transform to Asian Stylye\n10: Try a different recipe\n11: Exit')
             case = input('Enter number here: ')
             if case not in arr:
                 print('Invalid Input...\n')
@@ -125,62 +147,72 @@ if __name__ == '__main__':
                 continue
         if case == '1':
             print('Printing Transformed Recipe...\n')
-            to_healthy(recipe_obj)
+            recipe_obj = to_healthy(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '2':
             print('Printing Transformed Recipe...\n')
-            from_healthy(recipe_obj)
+            recipe_obj = from_healthy(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '3':
             print('Printing Transformed Recipe...\n')
-            vegetarian(recipe_obj)
+            #recipe_obj = vegetarian(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '4':
             print('Printing Transformed Recipe...\n')
-            vegetarian(recipe_obj)
+            #recipe_obj = vegetarian(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '5':
             print('Printing Transformed Recipe...\n')
-            vegetarian(recipe_obj)
+            #recipe_obj = vegetarian(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '6':
             print('Printing Transformed Recipe...\n')
-            double_amount(recipe_obj)
+            recipe_obj = double_amount(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '7':
             print('Printing Transformed Recipe...\n')
-            half_amount(recipe_obj)
+            recipe_obj = half_amount(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '1':
             print('Printing Transformed Recipe...\n')
-            to_healthy(recipe_obj)
+            recipe_obj = to_healthy(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '8':
             print('Printing Transformed Recipe...\n')
-            transform_to_mexican(recipe_obj)
+            recipe_obj = transform_to_mexican(recipe_obj)
+            print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '12'
             continue
         if case == '9':
             print('Printing Transformed Recipe...\n')
-            transform_to_asian(recipe_obj)
-            print('\nRecipe Transfomed')
+            recipe_obj = transform_to_asian(recipe_obj)
+            print_information(recipe_obj)
+            print('\nRecipe Transformed')
             case = '12'
             continue
         if case == '10':

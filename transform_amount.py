@@ -1,10 +1,9 @@
-from parse import extract_food_info, extract_directional_info, food, direction, get_num
+from parse import extract_food_info, extract_directional_info, food, direction, get_num, make_recipe_obj
 from transform_healthy import lookup_mod
 #modified cut_amount taken from the transform_healthy recipe
 def cut_dir_amount(step_text,prop):
 	def helper(sen, prop):
 		sen_lst = sen.split()
-		#print("GOT SENTENCE: ", sen)
 		for ind in range(len(sen_lst)):
 			word = sen_lst[ind]
 			num = get_num([word])
@@ -31,22 +30,18 @@ def cut_ing_amount(food_obj_lst, direc_obj_lst,prop):
 		direc.step = cut_dir_amount(direc.step, prop)
 	return
 
-def double_amount(recipe):
-	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
-	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
+def double_amount(recipe_obj):
+	food_lst, food_name_lst = extract_food_info(recipe_obj.ingredients)
+	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe_obj.directions, food_name_lst)
 	cut_ing_amount(food_lst, direc_lst,.5)
-	for ing in food_lst:
-		ing.print_food()
-	for step in direc_lst:
-		step.print_dir()
-	return
+	recipe_obj.servings *= 2
 
-def half_amount(recipe):
-	food_lst, food_name_lst = extract_food_info(recipe.ingredients)
-	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe.directions, food_name_lst)
+	return make_recipe_obj(recipe_obj,food_lst,direc_lst)
+
+def half_amount(recipe_obj):
+	food_lst, food_name_lst = extract_food_info(recipe_obj.ingredients)
+	direc_lst, tools_lst, methods_lst = extract_directional_info(recipe_obj.directions, food_name_lst)
 	cut_ing_amount(food_lst, direc_lst,2)
-	for ing in food_lst:
-		ing.print_food()
-	for step in direc_lst:
-		step.print_dir()
-	return
+	recipe_obj.servings *= 0.5
+
+	return make_recipe_obj(recipe_obj,food_lst,direc_lst)

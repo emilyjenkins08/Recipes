@@ -1,5 +1,5 @@
 from transform_vegetarian import vegetarian
-from parse import food
+from parse import food, make_recipe_obj
 
 soy_milk = food("soy_milk", 1, "cup", [], [])
 vegan_cheese = food("vegan_cheese", 1, "cup", [], [])
@@ -45,4 +45,3 @@ def vegan(recipe):
             if non_vegan in ing.name:
                 recipe = sub_food(recipe, ing, SUBS[non_vegan])
     return recipe
-

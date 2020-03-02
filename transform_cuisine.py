@@ -1,6 +1,6 @@
 # transform from recipe to mexican cuisine
 
-from parse import wrapper, remove_punc_lower, food, direction, get_num
+from parse import wrapper, remove_punc_lower, food, direction, get_num, make_recipe_obj
 import string
 from collections import deque
 from get_key_ingredient import get_key, get_key_food
@@ -126,7 +126,6 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	foodz_to_add = []
 	key_ingredients = get_key(recipe_obj)
 	key_ingr_obj_lst = get_key_food(recipe_obj)
-	print("key ingredients are ", key_ingredients)
 	for foodz in new_food_name_lst:
 		if foodz != meat_sp and foodz != pasta_sp and "broth" not in foodz and "cheese" not in foodz and "chips" not in foodz:
 			new_str += (foodz + ", ")
@@ -151,12 +150,12 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
 
-	for ing in new_food_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
 
-	return
+	recipe_obj.cuisine = "Mexican"
+	recipe_obj.name += " transformed into Mexican"
+	recipe_obj.servings = 4
+
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
 def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','cinnamon roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
@@ -208,7 +207,7 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 					new_food_name_lst.append(food1.name)
 					ingree.append(food1.name)
 			new_direc_obj_lst.append(direction(str3+str4,[ingree],['combine','roll'],[],[]))
-
+			recipe_obj.servings = 4
 		else:
 		#if wrd in flan_desserts: # one flan, 12 servings
 			new_food_lst.append(food("white sugar", 0.25,"cup","",""))
@@ -250,17 +249,16 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 			str4 = "Place a metal rack inside a large pot over medium heat. Add water to almost reach the rack; bring to a boil. Place the mold on the rack, cover the pot, and steam until flan is set and firm, about 45 minutes. Unmold flan onto a serving plate and let cool before serving."
 			new_direc_obj_lst.append(direction(str4,["water","flan"],["place","add","boil","steam","unmold","cool"],["metal rack",'large pot','mold','serving plate'],['45 minutes']))
 
+			recipe_obj.servings = 12
 
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
 
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
+	recipe_obj.cuisine = "Mexican"
+	recipe_obj.name += " transformed into Mexican"
 
-	return
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
 
 def lookup_mod(sen, lst):
@@ -297,23 +295,17 @@ def cut_amount_mod(step_text,lst,prop):
 def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	if recipe_obj.cuisine == "mexican" or recipe_obj.cuisine == "Mexican":
 		print("recipe is already mexican!")
-		return
+		return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 	# take care of soups
 	soups = ["soup", "bisque", "stew", "gumbo"]
 	if lookup(recipe_obj,soups):
-		transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
-		return
+		return transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 
 	# take care of desserts
 	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
 
 	if lookup(recipe_obj,desserts) or "ice cream" in remove_punc_lower(recipe_obj.name):
-		print("making dessert transformation")
-		transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
-		return
-	#if lookup(recipe_obj, desserts):
-	#	transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
-	#	return
+		return transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 
 
 	#basic lists to cycle through to make changes
@@ -394,18 +386,13 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 				diir.step = diir.step.replace("basil","garlic powder")
 
 
-	print("meat list: ", meat_lst)
-	print("pasta list: ", pasta_lst)
-	print("tools used: ", tools_lst)
 	if "baking dish" in tools_lst or "dish" in tools_lst or ("bake" in methods_lst and "oven" in tools_lst):
 		make_into_casserole = True
-		print("making into casserole")
 	elif meat_lst:
 		make_into_tacos = True
 		add_tortilla_dir = True
 		if "corn or flour tortillas" not in food_name_lst:
 			food_obj_lst.append(food("corn or flour tortillas", 2 * recipe_obj.servings, "", "", ""))
-			print("making into tacos")
 			add_taco_seasoning = True
 			food_name_lst.append("corn or flour tortillas")
 		if "mexican seasoning" not in food_name_lst:
@@ -413,13 +400,11 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 			food_name_lst.append("mexican seasoning")
 	elif pasta_lst:
 		make_into_rice = True
-		print("making into rice")
 		if "mexican seasoning" not in food_name_lst:
 			food_obj_lst.append(food("mexican seasoning", 2,"tbsp","",""))
 			food_name_lst.append("mexican seasoning")
 	else:
 		no_starch_meat = True
-		print("no meat or starch. most likely a veggie")
 		if "mexican seasoning" not in food_name_lst:
 			food_obj_lst.append(food("mexican seasoning", 2,"tbsp","",""))
 			food_name_lst.append("mexican seasoning")
@@ -594,16 +579,12 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 
 			new_dir_obj_lst.append(direction(step2pt1 + step2pt2,ingred,['stir','cook','boil','cover','simmer','fluff'],['fork'],["20 to 25 minutes"]))
 
-
+			recipe_obj.servings = 4
 
 			direc_obj_lst = new_dir_obj_lst
 			food_obj_lst = new_food_lst
 			food_name_lst = new_food_name_lst
 		else:
-			#find first step where rice is present and add mexican seasoning
-			#for step in direc_obj_lst:
-			#	if "rice" in step.step:
-
 			added = False
 			for step in direc_obj_lst:
 				if "cream" in step.step and "sour cream" not in step.step:
@@ -666,7 +647,6 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 					step.ingredient.append("mexican seasoning")
 
 	#making food substitutions to the directions list
-	print(subs)
 	for direc in direc_obj_lst:
 		for sub in subs:
 			if sub[0] in direc.ingredient:
@@ -688,20 +668,13 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 						new_time = direc.time[0].split()
 						direc.time = ["18 " + new_time[1]]
 
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
-
 	recipe_obj.cuisine = "Mexican"
 	recipe_obj.name += " transformed into Mexican"
 
-	print(recipe_obj.name)
-
-	return
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
 ### REMEMBER TO CHANGE CODE SO WE ADD TRANSFORMED INGREDIENT TO LIST IF NOT INITIALLY THERE
 
 def transform_cuisine(recipe):
 	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
-	transform_cuisine_main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+	return transform_cuisine_main(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)

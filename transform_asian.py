@@ -1,6 +1,6 @@
 # transform from recipe to asian
 
-from parse import wrapper, remove_punc_lower, food, direction
+from parse import wrapper, remove_punc_lower, food, direction, make_recipe_obj
 import string
 from collections import deque
 from get_key_ingredient import get_key, get_key_food
@@ -38,9 +38,6 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 		if veggie_present:
 			veggie_lst.append(veggie_present)
 			veggie_obj_lst.append(ing)
-
-	print("meat list: ", meat_lst)
-	print("veggie list: ", veggie_lst)
 
     # makes 4 servings
 	new_food_lst.append(food("olive oil", 2,"tablespoons","",""))
@@ -147,13 +144,9 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
 
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
+	recipe_obj.servings = 4
 
-
-	return
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
 def transform_dessert_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	new_food_lst = []
@@ -204,31 +197,25 @@ def transform_dessert_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_l
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
 
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
+	recipe_obj.servings = 4
 
-	return
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
 
 def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	if recipe_obj.cuisine == "asian" or recipe_obj.cuisine == "Asian":
 		print("recipe is already asian!")
-		return
+		return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 	# take care of soups
 	soups = ["soup", "bisque", "stew", "gumbo"]
 	if lookup(recipe_obj,soups):
-		transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
-		return
+		return transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 
 	# take care of desserts
 	desserts = ['cookie', 'brownie','pie','cake','cupcake','ice cream','popsicle','donut','pastry','croissant','churro','chocolate','caramel','butterscotch','dessert','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','gelato','sorbet','cracker','apple crisp','biscuit','cannoli','doughnut','eclair','flan','waffle','biscotti','pudding','pancake','cheesecake','frosting','mousse','roll','custard','crepe','frozen yogurt','fudge','froyo','gingersnap','gelatin','gingerbread','sundae','icing','jam','jellyroll','jelly','marshmallow','milkshake','macaroon','macaron','nougat','parfait','brittle','praline',"s'mores",'snickerdoodle','shortbread','scone','sugar','sweets','torte','tart','toffee','trifle','turnover']
 
 	if lookup(recipe_obj,desserts) or "ice cream" in remove_punc_lower(recipe_obj.name):
-		print("making dessert transformation")
-		transform_dessert_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
-		return
+		return transform_dessert_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst)
 
 
 	#basic lists to cycle through to make changes
@@ -253,10 +240,6 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 		if veggie_present:
 			veggie_lst.append(veggie_present)
 			veggie_obj_lst.append(ing)
-
-	print("meat list: ", meat_lst)
-	print("veggie list: ", veggie_lst)
-
 
 	new_food_lst = []
 	new_food_name_lst = []
@@ -334,11 +317,9 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
 
-	for ing in food_obj_lst:
-		ing.print_food()
-	for step in direc_obj_lst:
-		step.print_dir()
+	recipe_obj.servings = 4
+	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
-def transform_cuisine_asian(recipe):
-	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe.ingredients, recipe.directions)
-	transform_cuisine_main_asian(recipe, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
+def transform_cuisine_asian(recipe_obj):
+	food_lst, food_name_lst, direc_lst, tools_lst, methods_lst = wrapper(recipe_obj.ingredients, recipe_obj.directions)
+	return transform_cuisine_main_asian(recipe_obj, food_lst, food_name_lst, direc_lst, tools_lst, methods_lst)
