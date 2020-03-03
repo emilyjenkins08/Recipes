@@ -1,5 +1,5 @@
 from transform_vegetarian import to_vegetarian
-from parse import food
+from parse import food, make_recipe_obj
 from transform_healthy import make_substitutions
 
 
@@ -49,6 +49,3 @@ def to_vegan(recipe):
                     sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
                     dir.ingredients.append(sub.name)
                     ingredient_info.append(sub)
-
-
-
