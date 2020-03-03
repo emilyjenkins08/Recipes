@@ -3,11 +3,13 @@ from lxml import html
 from bs4 import BeautifulSoup
 from parse import wrapper, extract_food_info
 from transform_vegetarian import to_vegetarian
+from transform_vegetarian import from_vegetarian
 from transform_healthy import to_healthy, from_healthy
 from get_key_ingredient import get_key
 from transform_amount import double_amount, half_amount
 from transform_cuisine import transform_cuisine as transform_to_mexican
 from transform_asian import transform_cuisine_asian as transform_to_asian
+from transform_vegan import to_vegan
 
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
             'Persian', 'Filipino', 'Indonesian', 'Malaysian', 'Vietnamese', 'Asian', 'Caribbean', 'South American',
@@ -117,7 +119,7 @@ if __name__ == '__main__':
                 continue
         if case == '12':
             print('\nWhich transformation would you like to perform now?\n\nPlease enter the appropiate number...')
-            print('\n1: Tranform to healthy\n2: Transform to unhealthy\n3: Transform to Vegetarian\n4: Transform to Non-Vegetarian\n5: Transform to Vegan\n6: Make it for double the people\n7: Make it for half the people\n8: Transform to Mexican Style\n9: Transform to Asian Stylye\n10: Try a differnt recipe\n11: Exit')
+            print('\n1: Tranform to healthy\n2: Transform to unhealthy\n3: Transform to Vegetarian\n4: Transform to Non-Vegetarian\n5: Transform to Vegan\n6: Make it for double the people\n7: Make it for half the people\n8: Transform to Mexican Style\n9: Transform to Asian Style\n10: Try a different recipe\n11: Exit')
             case = input('Enter number here: ')
             if case not in arr:
                 print('Invalid Input...\n')
@@ -188,3 +190,4 @@ if __name__ == '__main__':
             continue
         if case == '11':
             break
+

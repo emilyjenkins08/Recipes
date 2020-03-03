@@ -117,7 +117,7 @@ def extract_food_info(ing_lst):
                    'divided', 'drained', 'finely', 'grated', 'juiced', 'minced', 'peeled', 'rinsed', 'seeded',
                    'shredded', 'skinless', 'sliced', 'steamed', 'uncooked', 'shelled', 'thawed', 'shucked']
     description = ['dried', 'fresh', 'freshly', 'large', 'medium', 'seasoned', 'small', 'thinly', 'unopened',
-                   'undrained', 'ground', 'spicy', 'bone-in', 'chilled']
+                   'undrained', 'ground', 'spicy', 'bone-in', 'chilled', 'lean']
     measurements = ['bunch', 'can', 'clove', 'cup', 'ounce', 'package', 'pinch', 'pint', 'pound', 'teaspoon',
                     'tablespoon', 'container', 'dash', 'quart']
 
@@ -140,6 +140,14 @@ def extract_food_info(ing_lst):
             meas = "to taste"
             slt.remove("to")
             slt.remove("taste")
+        if "fat free" in item:
+            desc_lst.append("fat free")
+            slt.remove("fat")
+            slt.remove("free")
+        if "skin on" in item:
+            desc_lst.append("skin on")
+            slt.remove("skin")
+            slt.remove("on")
         while i < len(slt):
             wrd = slt[i]
             if wrd[0] == '(':
@@ -209,6 +217,13 @@ def extract_food_info(ing_lst):
         if 'apple' in item:
             print('2', name)
         if '(' in item and ')' in item:
+            # extract possible quant and meas that might be in the parentheses
+            possible_quant = item[item.index('('):item.index(')') + 1][1:-1]
+            pair = [get_num(possible_quant.split()), get_meas(possible_quant.split())]
+            if pair[0] != 0 and pair[1]:
+                quant = pair[0]
+                meas = pair[1]
+        if '(' in name and ')' in name:
             # modify name to get rid of parentheses
             name = name.replace(name[name.index('('):name.index(')') + 1], "")
             if name[-1] == " ":
