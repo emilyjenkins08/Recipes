@@ -1,13 +1,14 @@
 import requests
 from lxml import html
 from bs4 import BeautifulSoup
+from transform_vegetarian import to_vegetarian, from_vegetarian
 from parse import wrapper, extract_food_info, extract_directional_info
-from transform_vegetarian import vegetarian
 from transform_healthy import to_healthy, from_healthy
 from get_key_ingredient import get_key
 from transform_amount import double_amount, half_amount
 from transform_cuisine import transform_cuisine as transform_to_mexican
 from transform_asian import transform_cuisine_asian as transform_to_asian
+from transform_vegan import to_vegan
 from transform_indian import transform_cuisine_indian as transform_to_indian
 
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
@@ -162,21 +163,21 @@ if __name__ == '__main__':
             continue
         if case == '3':
             print('Printing Transformed Recipe...\n')
-            #recipe_obj = vegetarian(recipe_obj)
+            recipe_obj = to_vegetarian(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '13'
             continue
         if case == '4':
             print('Printing Transformed Recipe...\n')
-            #recipe_obj = vegetarian(recipe_obj)
+            recipe_obj = from_vegetarian(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '13'
             continue
         if case == '5':
             print('Printing Transformed Recipe...\n')
-            #recipe_obj = vegetarian(recipe_obj)
+            recipe_obj = to_vegan(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transfomed')
             case = '13'
@@ -228,3 +229,4 @@ if __name__ == '__main__':
             continue
         if case == '12':
             break
+

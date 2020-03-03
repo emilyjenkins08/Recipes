@@ -47,6 +47,9 @@ def lookup(ing, lst):
 def make_substitutions(old_food, new_food, step_text):
     text_slt = step_text.split()
     old_food_slt = [remove_punc_lower(i) for i in old_food.split()]
+    for w in old_food_slt:
+        if w[-1] == "s":
+            old_food_slt.append(w[:-1])
     ind = 0
     subs = []
     rmv = []
