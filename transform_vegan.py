@@ -26,7 +26,9 @@ SUBS = {"milk": "soy milk",
 
 
 def to_vegan(recipe):
-    ingredient_info, directions = to_vegetarian(recipe)
+    recipe = to_vegetarian(recipe)
+    ingredient_info = recipe.ingredients
+    directions = recipe.directions
     for non_vegan in SUBS.keys():
         for dir in directions:
             for ing in dir.ingredient:
@@ -68,10 +70,7 @@ def to_vegan(recipe):
                                 dir.ingredient.append(sub.name)
                                 ingredient_info.append(sub)
 
-    for ing in ingredient_info:
-        ing.print_food()
-    for dir in directions:
-        dir.print_dir()
+    return make_recipe_obj(recipe, ingredient_info, directions)
 
 
 

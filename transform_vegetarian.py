@@ -248,11 +248,7 @@ def to_vegetarian(recipe):
                 new_ingredient_info, new_directions = remove_meat(meat, new_ingredient_info, new_directions)
     else:
         return "already veg"
-    for i in new_ingredient_info:
-        i.print_food()
-    for d in new_directions:
-        d.print_dir()
-    return new_ingredient_info, new_directions
+    return make_recipe_obj(recipe, new_ingredient_info, new_directions)
 
 
 def add_meat(servings, ingredients, directions, meat, recipe_name):
@@ -261,7 +257,8 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
     if meat.name == "bacon":
         directions.insert(0,
                           direction(
-                              "Place bacon in a skillet over medium-high heat and cook until crispy. Chop into small pieces and save for later.",
+                              "Place bacon in a skillet over medium-high heat and cook until crispy. "
+                              "Chop into small pieces and save for later.",
                               ['bacon'],
                               ['place', 'cook', 'chop'],
                               ['skillet'], []))
@@ -280,8 +277,8 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
                             ind = splt.index("layer")
                             print(ind)
                             ind2 = splt[ind:].index("with")
-                            splt.insert(len(splt[:ind])+ind2+1, "ham")
-                            splt.insert(len(splt[:ind])+ind2+2, "and")
+                            splt.insert(len(splt[:ind]) + ind2 + 1, "ham")
+                            splt.insert(len(splt[:ind]) + ind2 + 2, "and")
                             sent = " ".join(splt)
                             split_step[i] = sent
                     dir.step = ".".join(split_step)
@@ -291,8 +288,8 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
                         if "add" in sent:
                             splt = sent.split()
                             ind = splt.index("add")
-                            splt.insert(ind+1, "ham")
-                            splt.insert(ind+2, "and")
+                            splt.insert(ind + 1, "ham")
+                            splt.insert(ind + 2, "and")
                             sent = " ".join(splt)
                             split_step[i] = sent
                     dir.step = ".".join(split_step)
@@ -319,11 +316,12 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
                               ['10 minutes']
                           ))
         for dir in directions:
-            if any(["noodle" in ingredient for ingredient in dir.ingredient]) and "layer" in dir.step or "arrange" in dir.step:
+            if any(["noodle" in ingredient for ingredient in
+                    dir.ingredient]) and "layer" in dir.step or "arrange" in dir.step:
                 splt = dir.step.split(".")
                 for i, sent in enumerate(splt):
                     if "layer" in sent:
-                        splt.insert(i+1, "Layer the meat on top")
+                        splt.insert(i + 1, "Layer the meat on top")
                         dir.step = ".".join(splt)
                         break
                         break
@@ -345,8 +343,6 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
         else:
             pass
     return ingredients, directions
-    for dir in directions:
-        dir.print_dir()
 
 
 def replace_with_meat(servings, ingredients, directions, meat, veg):
@@ -360,15 +356,12 @@ def replace_with_meat(servings, ingredients, directions, meat, veg):
             dir.ingredient.append(meat)
     for dir in directions:
         dir.print_dir()
-    return directions
+    return ingredients, directions
 
 
 def from_vegetarian(recipe):
     full_ingredient_info, ingredients = extract_food_info(recipe.ingredients)
-    new_ingredient_info = full_ingredient_info
     directions, master_tools, master_methods = extract_directional_info(recipe.directions, ingredients)
-    new_directions = []
-    replace = ""
     chicken_breast = food("chicken breast", .25, "pounds", [], ['boneless', 'skinless'])
     shredded_chicken = food("shredded chicken", 1, "cups", [], [])
     bacon = food("bacon", 1, "strips", [], [])
@@ -382,7 +375,7 @@ def from_vegetarian(recipe):
         else:
             for ingredient in full_ingredient_info:
                 if "jackfruit" in ingredient.name:
-                    replace_with_meat(full_ingredient_info, directions, shredded_chicken, ingredient)
+                    full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, shredded_chicken, ingredient)
             else:
                 if "salad" in recipe.name:
                     meat_sub = chicken_breast
@@ -395,4 +388,5 @@ def from_vegetarian(recipe):
                 elif any([pasta in recipe.name for pasta in PASTAS]) or any([rice in recipe.name for rice in RICE]):
                     meat_sub = shrimp
                 else:
-                    add_meat(recipe.servings, full_ingredient_info, directions, meat_sub, recipe.name)
+                    full_ingredient_info, directions = add_meat(recipe.servings, full_ingredient_info, directions, meat_sub, recipe.name)
+    return make_recipe_obj(recipe, full_ingredient_info, directions)
