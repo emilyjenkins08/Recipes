@@ -1,47 +1,76 @@
-from transform_vegetarian import vegetarian
+from transform_vegetarian import to_vegetarian
 from parse import food, make_recipe_obj
+from transform_healthy import make_substitutions
 
-soy_milk = food("soy_milk", 1, "cup", [], [])
-vegan_cheese = food("vegan_cheese", 1, "cup", [], [])
-banana = food("banana", .25, "cup", ["mashed"], [])
-vegetable_broth = food("vegetable broth", 1, "cup", [], [])
-olive_oil = food("olive oil", 1, "tablespoon", [], [])
-soy_yogurt = food("soy yogurt", 1, "cup", ["plain"], [])
-vegan_sour_cream = food()
-vegan_mayo = food()
-agar_powder = food()
-maple_syrup = food()
-vegan_cream_cheese = food()
-non_dairy_choc = food()
-soy_ice_cream = food()
-coconut_cream = food()
+CHEESE_NAMES = ['gouda', 'brie', 'parmesan', 'mozzarella', 'cheddar', 'pepper jack']
 
-SUBS = {"milk": soy_milk,
-        "cream cheese": vegan_cream_cheese,
-        "cream": coconut_cream,
-        "cheese": vegan_cheese,
-        "egg": banana,
-        "broth": vegetable_broth,
-        "stock": vegetable_broth,
-        "butter": olive_oil,
-        "yogurt": soy_yogurt,
-        "sour cream": vegan_sour_cream,
-        "mayonaisse": vegan_mayo,
-        "gelatin": agar_powder,
-        "honey": maple_syrup,
-        "chocolate": non_dairy_choc,
-        "ice cream": soy_ice_cream,
+
+SUBS = {"milk": "soy milk",
+        "cream cheese": "vegan cream cheese",
+        "creme fraiche": "vegan cream cheese",
+        "cottage cheese": "silken tofu",
+        "ice cream": "soy ice cream",
+        "sour cream": "vegan sour cream",
+        "whipped cream": "soy ice cream",
+        "cream": "coconut cream",
+        "cheese": "vegan cheese",
+        "egg": "banana",
+        "butter": "olive oil",
+        "yogurt": "soy yogurt",
+        "mayonaisse": "vegan mayo",
+        "gelatin": "agar powder",
+        "honey": "maple syrup",
+        "chocolate": "non-dairy chocolate",
+        "whey protein": "pea protein"
         }
 
 
-def sub_food(recipe, food, sub):
-    return recipe
-
-
-def vegan(recipe):
-    ingredients, ingredient_info, directions, master_tools, master_methods = vegetarian(recipe)
+def to_vegan(recipe):
+    recipe = to_vegetarian(recipe)
+    ingredient_info = recipe.ingredients
+    directions = recipe.directions
     for non_vegan in SUBS.keys():
-        for ing in ingredient_info:
-            if non_vegan in ing.name:
-                recipe = sub_food(recipe, ing, SUBS[non_vegan])
-    return recipe
+        for dir in directions:
+            for ing in dir.ingredient:
+                if non_vegan in ing and SUBS[non_vegan] not in ing:
+                    dir.step = make_substitutions(ing, SUBS[non_vegan], dir.step)
+                    dir.ingredient.remove(ing)
+                    for ingredient in ingredient_info:
+                        if ingredient.name == ing:
+                            ingredient_info.remove(ingredient)
+                            sub_name = SUBS[non_vegan]
+                            if sub_name not in ["banana", "silken tofu"]:
+                                sub_quant = ingredient.quant
+                                sub_meas = ingredient.meas
+                                sub_prep = ingredient.prep
+                            elif sub_name == "banana":
+                                sub_quant = ingredient.quant * .25
+                                sub_meas = "cups"
+                                sub_prep = ["mashed"]
+                            else:
+                                sub_quant = ingredient.quant
+                                sub_meas = ingredient.meas
+                                sub_prep = ["mashed"]
+                            sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
+                            dir.ingredient.append(sub.name)
+                            ingredient_info.append(sub)
+                            break
+                elif any([cheese in ing for cheese in CHEESE_NAMES]):
+                    for dir in directions:
+                        dir.step = make_substitutions(ing, SUBS["cheese"], dir.step)
+                        dir.ingredient.remove(ing)
+                        for ingredient in ingredient_info:
+                            if ingredient.name == ing:
+                                ingredient_info.remove(ingredient)
+                                sub_name = SUBS["cheese"]
+                                sub_quant = ingredient.quant
+                                sub_meas = ingredient.meas
+                                sub_prep = ingredient.prep
+                                sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
+                                dir.ingredient.append(sub.name)
+                                ingredient_info.append(sub)
+
+    return make_recipe_obj(recipe, ingredient_info, directions)
+
+
+
