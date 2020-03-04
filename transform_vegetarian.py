@@ -3,7 +3,7 @@ from transform_healthy import make_substitutions, make_recipe_obj
 
 SOUPS = ['soup', 'chili', 'stew', 'pho', 'miso', 'gazpacho', 'bisque', 'chowder']
 PASTAS = ['pasta', 'ziti', 'lo mein', 'ravioli', 'fettuccine', 'penne', 'noodle', 'pad thai',
-          'macaroni', 'shells', 'spaghetti', 'parmesan', 'tortellini', 'chow mein', 'chow fun', 'scampi']
+          'macaroni', 'shells', 'spaghetti', 'tortellini', 'chow mein', 'chow fun', 'scampi']
 CASSEROLES = ['lasagna', 'pastitsio']
 RICE = ['fried rice', 'frutti de mar', 'jambalaya', 'gumbo', 'stir fry']
 SANDWICH = ['sandwich', 'panini', 'torta']
@@ -26,6 +26,10 @@ MUSHROOM_TIMES = {'ingredient': 'mushrooms',
                   'pan-fry': '4 minutes',
                   'grill': '10 minutes',
                   'bake': '15 minutes'}
+CHICKEN_TIMES = {'ingredient': 'chicken',
+                 'pan-fry': '10 minutes',
+                 'grill': '10 minutes',
+                 'bake': '25 minutes'}
 tofu_ingredient = food('tofu', 175, 'mL', ['extra-firm', 'non-silken'], ['pressed', 'cubed'])
 portobello_ingredient = food('portobello mushrooms', 1, '', [], [])
 baby_bella_ingredient = food('baby bella mushrooms', 1, 'cups', [], ['diced'])
@@ -64,7 +68,7 @@ def meat_cooking(step, methods, times, tools, ingredients, dict):
     for method in methods:
         if method in step.lower():
             if not any([ing.name in step for ing in ingredients]):
-                if method == "cook":
+                if method == "cook" or method == "saute":
                     if "oven" in step:
                         for time in times:
                             if time in step:
@@ -193,8 +197,8 @@ def to_vegetarian(recipe):
             new_broth_quant = ingredient.quant
             new_broth_meas = ingredient.meas
             new_broth = food(new_broth_name, new_broth_quant, new_broth_meas, [], [])
-            full_ingredient_info.remove(ingredient)
-            full_ingredient_info.append(new_broth)
+            new_ingredient_info.remove(ingredient)
+            new_ingredient_info.append(new_broth)
             for dir in directions:
                 if ingredient.name in dir.ingredient:
                     dir.step = make_substitutions(ingredient.name, new_broth_name, dir.step)
@@ -248,6 +252,8 @@ def to_vegetarian(recipe):
                 new_ingredient_info, new_directions = remove_meat(meat, new_ingredient_info, new_directions)
     else:
         return "already veg"
+    for dir in new_directions:
+        dir.print_dir()
     return make_recipe_obj(recipe, new_ingredient_info, new_directions)
 
 
@@ -275,12 +281,14 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
                         if "layer" in sent:
                             splt = sent.split()
                             ind = splt.index("layer")
-                            print(ind)
-                            ind2 = splt[ind:].index("with")
-                            splt.insert(len(splt[:ind]) + ind2 + 1, "ham")
-                            splt.insert(len(splt[:ind]) + ind2 + 2, "and")
-                            sent = " ".join(splt)
-                            split_step[i] = sent
+                            try:
+                                ind2 = splt[ind:].index("with")
+                                splt.insert(len(splt[:ind]) + ind2 + 1, "ham")
+                                splt.insert(len(splt[:ind]) + ind2 + 2, "and")
+                                sent = " ".join(splt)
+                                split_step[i] = sent
+                            except ValueError:
+                                split_step.insert(i + 1, "Add a layer of ham.")
                     dir.step = ".".join(split_step)
                 elif "add" in dir.method:
                     split_step = dir.step.split(".")
@@ -341,7 +349,15 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
                                         [],
                                         []))
         else:
-            pass
+            for dir in directions:
+                if "heat" in dir.method:
+                    split = dir.split(".")
+                    for i, sent in enumerate(split):
+                        if "heat" in sent.lower() and ("skillet" in sent or "pan" in sent or "pot" in sent):
+                            split(i + 1, "Add chicken breast and cook for about 10 minutes, until cooked through.")
+                            break
+                            break
+                    dir.step = ".".join(split)
     return ingredients, directions
 
 
@@ -349,13 +365,34 @@ def replace_with_meat(servings, ingredients, directions, meat, veg):
     ingredients.remove(veg)
     meat.quant *= servings
     ingredients.append(meat)
+    if meat.name == "shredded chicken":
+        for dir in directions:
+            if veg.name in dir.ingredient:
+                split = dir.split(".")
+                for i, sent in enumerate(split):
+                    if "cook" in sent.lower() or "saute" in sent.lower() and any([w in sent for w in veg.name.split()]):
+                        sent = "Cook %s for 8-10 minutes" % meat.name
+                        split[i] = sent
+                    elif "rinse" in sent.lower() and len(dir.ingredient) == 1:
+                        split.remove(sent)
+                dir.step = ".".join(split)
+    else:
+        for dir in directions:
+            if veg.name in dir.ingredient:
+                dir.ingredient.remove(veg.name)
+                dir.ingredient.append(meat.name)
+                step_sents = dir.step.split(".")
+                for ind, sent in enumerate(step_sents):
+                    if "tofu" in sent:
+                        sent = meat_cooking(sent, dir.method, dir.time, dir.tool, ingredients, CHICKEN_TIMES)
+                        step_sents[ind] = sent
+                dir.step = ".".join(step_sents)
     for dir in directions:
         if veg.name in dir.ingredient:
-            dir.step = make_substitutions(veg.name, meat, dir.step)
+            dir.step = make_substitutions(veg.name, meat.name, dir.step)
             dir.ingredient.remove(veg.name)
-            dir.ingredient.append(meat)
-    for dir in directions:
-        dir.print_dir()
+            dir.ingredient.append(meat.name)
+
     return ingredients, directions
 
 
@@ -372,21 +409,31 @@ def from_vegetarian(recipe):
     for ingredient in full_ingredient_info:
         if any([meat in ingredient.name for meat in MEATS]):
             return "already contains meat"
-        else:
-            for ingredient in full_ingredient_info:
-                if "jackfruit" in ingredient.name:
-                    full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, shredded_chicken, ingredient)
+    for ingredient in full_ingredient_info:
+        if "jackfruit" in ingredient.name:
+            full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, shredded_chicken,
+                                                                 ingredient)
+        elif "tofu" in ingredient.name:
+            if "grilled" in recipe.name.lower() or "fried" in recipe.name.lower():
+                chicken_breast.prep = []
             else:
-                if "salad" in recipe.name:
-                    meat_sub = chicken_breast
-                elif any([soup in recipe.name for soup in SOUPS]):
-                    meat_sub = bacon
-                elif any([cass in recipe.name for cass in CASSEROLES]):
-                    meat_sub = ground_beef
-                elif any([sandwich in recipe.name for sandwich in SANDWICH]):
-                    meat_sub = ham
-                elif any([pasta in recipe.name for pasta in PASTAS]) or any([rice in recipe.name for rice in RICE]):
-                    meat_sub = shrimp
-                else:
-                    full_ingredient_info, directions = add_meat(recipe.servings, full_ingredient_info, directions, meat_sub, recipe.name)
+                chicken_breast.prep = ['cubed']
+            full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, chicken_breast,
+                                                                 ingredient)
+        else:
+            if "salad" in recipe.name:
+                meat_sub = chicken_breast
+            elif any([soup in recipe.name for soup in SOUPS]):
+                meat_sub = bacon
+            elif any([cass in recipe.name for cass in CASSEROLES]):
+                meat_sub = ground_beef
+            elif any([sandwich in recipe.name for sandwich in SANDWICH]):
+                meat_sub = ham
+            elif any([pasta in recipe.name for pasta in PASTAS]) or any([rice in recipe.name for rice in RICE]):
+                meat_sub = shrimp
+            else:
+                chicken_breast.prep = ['cubed']
+                meat_sub = chicken_breast
+            full_ingredient_info, directions = add_meat(recipe.servings, full_ingredient_info, directions, meat_sub,
+                                                        recipe.name)
     return make_recipe_obj(recipe, full_ingredient_info, directions)
