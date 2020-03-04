@@ -9,10 +9,15 @@ def cut_dir_amount(step_text,prop):
 			num = get_num([word])
 			if num != 0:
 				if ind + 1 < len(sen_lst) and not lookup_mod(sen_lst[ind + 1], ['more','degree', 'minute', 'hour', 'second', 'to']):
+					if get_num([sen_lst[ind+1]]) != 0:
+						num += get_num([sen_lst[ind+1]])
+						sen_lst[ind +  1] = '%^&'
 					num = str(num/prop)
-					if num[-2:] == '.0':
+					if len(num) >= 2 and num[-2:] == '.0':
 						num = num[:-2]
 					sen_lst[ind] = num
+		while '%^&' in sen_lst:
+			sen_lst.remove('%^&')
 		sen = ' '.join(sen_lst)
 		return(sen)
 	step_sen = step_text.split('. ')

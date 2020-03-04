@@ -67,6 +67,8 @@ def remove_punc_lower(text):
 def get_num(arr):
     num = 0
     for text in arr:
+        if len(text) == 0:
+            return num
         if not text[0].isdigit() or not remove_punc_lower(text).isdigit():
             return num
         if '/' in text:
@@ -98,7 +100,6 @@ def get_meas(wrd_lst):
 def fix_name(name, prep_lst, des_lst):
     def lookup(str1, lst):
         str_lst = str1.split()
-        print(str_lst)
         for i in str_lst:
             if i in lst:
                 return i
@@ -139,7 +140,6 @@ def extract_food_info(ing_lst):
     food_name_lst = []
     # print(ind_lst, '\n')
     for item in ing_lst:
-        print(item)
         slt = item.split()
         i, start, end = 0, 0, len(slt)
         name = ''
@@ -204,26 +204,18 @@ def extract_food_info(ing_lst):
             prep = ' '.join(prep_lst)
         if desc_lst != []:
             desc = ' '.join(desc_lst)
-        print("strt: ", start, " end+1: ", end+1)
-        print(name)
         while start >= len(slt):
             start -= 1
         while end <= start and end < len(slt):
             end += 1
         name = slt[start:end + 1]
-        print("name is ", name)
         j, start = 0, 0
         while j < len(name):
             j += 1
         name = ' '.join(name[start:])
-        print(name, " is name")
         if name[-1] == ',':
             name = name[:-1]
-        if 'apple' in item:
-            print('3',name)
         name = fix_name(name, preparation, description)
-        if 'apple' in item:
-            print('2',name)
         if '(' in item and ')' in item:
             #extract possible quant and meas that might be in the parentheses
             possible_quant = item[item.index('('):item.index(')')+1][1:-1]
@@ -329,7 +321,6 @@ def wrapper(ing_lst, step_lst):
 def make_recipe_obj(recipe_obj, food_obj_lst, direc_obj_lst):
     name = recipe_obj.name
     ingredient_groups = recipe_obj.ingredient_groups
-    directions = [direc.step for direc in direc_obj_lst]
     cuisine = recipe_obj.cuisine
     servings = recipe_obj.servings
 
@@ -338,7 +329,11 @@ def make_recipe_obj(recipe_obj, food_obj_lst, direc_obj_lst):
     for i in food_obj_lst:
         ing = ''
         if i.quant:
-            ing += str(i.quant) + " "
+            i.quant = round(i.quant,3)
+            str_quant = str(i.quant)
+            if len(str_quant) >= 2 and str_quant[-2:] == '.0':
+                str_quant = str_quant[:-2]
+            ing += str_quant + " "
         if i.meas:
             ing += str(i.meas) + " "
         if i.name:
@@ -350,5 +345,21 @@ def make_recipe_obj(recipe_obj, food_obj_lst, direc_obj_lst):
         while ing[-1] == "," or ing[-1] == " ":
             ing = ing[:-1]
         ingredients.append(ing)
+
+    #get directions
+    directions = [direc.step for direc in direc_obj_lst]
+    for j,direc in enumerate(directions):
+        sen_slt = direc.split('. ')
+        for i,sen in enumerate(sen_slt):
+            wrd_slt = sen.split()
+            for k,wrd in enumerate(wrd_slt):
+                if get_num([wrd]):
+                    num_str = str(round(get_num([wrd]),3))
+                    if len(num_str) >= 2 and num_str[-2:] == '.0':
+                        num_str = num_str[:-2]
+                    wrd_slt[k] = num_str
+            sen_slt[i] = (' ').join(wrd_slt)
+        directions[j] = ('. ').join(sen_slt)
+
 
     return recipe(name,ingredient_groups,ingredients,directions,cuisine,servings)
