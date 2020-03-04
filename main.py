@@ -10,6 +10,7 @@ from transform_cuisine import transform_cuisine as transform_to_mexican
 from transform_asian import transform_cuisine_asian as transform_to_asian
 from transform_vegan import to_vegan
 from transform_indian import transform_cuisine_indian as transform_to_indian
+from transform_greek import transform_cuisine_greek as transform_to_greek
 
 CUISINES = ['Italian', 'Mexican', 'Chinese', 'Indian', 'Thai', 'Japanese', 'Korean', 'Pakistani', 'Bangladeshi',
             'Persian', 'Filipino', 'Indonesian', 'Malaysian', 'Vietnamese', 'Asian', 'Caribbean', 'South American',
@@ -214,9 +215,9 @@ if __name__ == '__main__':
                 case = '-1'
         if case == '7':
             print('\nHow would you like to transform cuisine?')
-            print('1: Mexican\n2: Asian\n3: Indian\n4: Go Back')
+            print('1: Mexican\n2: Asian\n3: Indian\n4: Greek\n5: Go Back')
             option = input('Enter number here: ')
-            if option not in ['1','2','3','4']:
+            if option not in ['1','2','3','4','5']:
                 print("Invalid Input...")
                 continue
             if option == '1':
@@ -226,6 +227,8 @@ if __name__ == '__main__':
             if option == '3':
                 case = '15'
             if option == '4':
+                case = '16'
+            if option == '5':
                 case = '-1'
         if case == '8':
             case = '0'
@@ -267,6 +270,13 @@ if __name__ == '__main__':
         if case == '15':
             print('Printing Transformed Recipe...\n')
             recipe_obj = transform_to_indian(recipe_obj)
+            print_information(recipe_obj)
+            print('\nRecipe Transformed')
+            case = '-1'
+            continue
+        if case == '16':
+            print('Printing Transformed Recipe...\n')
+            recipe_obj = transform_to_greek(recipe_obj)
             print_information(recipe_obj)
             print('\nRecipe Transformed')
             case = '-1'
