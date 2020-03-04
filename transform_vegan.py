@@ -1,6 +1,7 @@
 from transform_vegetarian import to_vegetarian
 from parse import food, make_recipe_obj
 from transform_healthy import make_substitutions
+from parse import extract_food_info, extract_directional_info
 
 CHEESE_NAMES = ['gouda', 'brie', 'parmesan', 'mozzarella', 'cheddar', 'pepper jack']
 
@@ -17,7 +18,7 @@ SUBS = {"milk": "soy milk",
         "egg": "banana",
         "butter": "olive oil",
         "yogurt": "soy yogurt",
-        "mayonaisse": "vegan mayo",
+        "mayonnaise": "vegan mayo",
         "gelatin": "agar powder",
         "honey": "maple syrup",
         "chocolate": "non-dairy chocolate",
@@ -27,8 +28,8 @@ SUBS = {"milk": "soy milk",
 
 def to_vegan(recipe):
     recipe = to_vegetarian(recipe)
-    ingredient_info = recipe.ingredients
-    directions = recipe.directions
+    ingredient_info, ingredient_names = extract_food_info(recipe.ingredients)
+    directions, tools, methods = extract_directional_info(recipe.directions, ingredient_names)
     for non_vegan in SUBS.keys():
         for dir in directions:
             for ing in dir.ingredient:
