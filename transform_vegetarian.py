@@ -259,8 +259,6 @@ def to_vegetarian(recipe):
     else:
         print("This recipe is already vegetarian")
         return recipe
-    for dir in new_directions:
-        dir.print_dir()
     return make_recipe_obj(recipe, new_ingredient_info, new_directions)
 
 
@@ -331,12 +329,17 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
                               ['10 minutes']
                           ))
         for dir in directions:
-            if any(["noodle" in ingredient for ingredient in
-                    dir.ingredient]) and "layer" in dir.step or "arrange" in dir.step:
+            if (any(["noodle" in ingredient for ingredient in
+                    dir.ingredient]) or "sauce" in dir.step) and ("layer" in dir.step or "arrange" in dir.step):
                 splt = dir.step.split(".")
                 for i, sent in enumerate(splt):
                     if "layer" in sent:
                         splt.insert(i + 1, "Layer the meat on top")
+                        dir.step = ".".join(splt)
+                        break
+                        break
+                    elif "arrange" in sent:
+                        splt.insert(i+1, "Layer the meat on top")
                         dir.step = ".".join(splt)
                         break
                         break
