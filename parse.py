@@ -106,11 +106,11 @@ def fix_name(name, prep_lst, des_lst):
         for i in str_lst:
             if i in lst:
                 return i
-            elif i[-1] in [',', '.', ';', '-']:
+            elif i[-1] in [',', '.', ';', '-'] and i[:-1] in lst:
                 return i
         return False
 
-    other_lst = ['and', 'into', 'to', 'for', 'while']
+    other_lst = [' and', ' into', ' to', ' for', ' while']
     prep_bool = lookup(name, prep_lst)
     while prep_bool:
         name = name.replace(prep_bool, "")
