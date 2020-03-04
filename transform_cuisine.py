@@ -86,6 +86,7 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	new_food_name_lst.append("Monterey Jack cheese")
 
 	#get broth
+	items_added = []
 	meat_present = False
 	broth = False
 	pasta_present = False
@@ -95,6 +96,7 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 		if "broth" in ing.name or lookup(ing,meat) or lookup(ing,pasta):
 			new_food_lst.append(food(ing.name,(ing.quant / recipe_obj.servings * 4),ing.meas,ing.desc,ing.prep))
 			new_food_name_lst.append(ing.name)
+			items_added.append(ing.name)
 		if "broth" in ing.name:
 			broth = True
 		if lookup(ing,meat) and meat_present == False:
@@ -137,6 +139,7 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 				new_food_name_lst.append(item.name)
 				foodz_to_add.append(item.name)
 				new_str += (item.name + ", ")
+				items_added.append(item.name)
 	new_str = new_str[:len(new_str)-2] + "."
 	new_str = new_str[:(new_str.index(foodz_to_add[-1])-1)] + " and " + new_str[new_str.index(foodz_to_add[-1]):]
 	new_str += " Reduce heat to low and simmer for about 20 to 30 minutes."
@@ -149,6 +152,22 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
+
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			strr += item + ", "
+			count += 1
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	print("- Used key ingredients from the original recipe to make enchilada soup.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
 
 
 	recipe_obj.cuisine = "Mexican"
@@ -167,6 +186,7 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 	flan_desserts = ['pie','cake','cupcake','ice cream','popsicle','flan','pudding','frosting','custard','gelato','sorbet','mousse','frozen yogurt','fudge','froyo','gelatin','sundae','icing','jam','jelly','jellyroll','marshmallow','milkshake','parfait','praline',"s'mores",'sugar','tart','torte','toffee','trifle','turnover']
 	churro_desserts = ['cookie','brownie','donut','doughnut','pastry','croissant','churro','caramel','butterscotch','candy','m&m','meringue','bread','loaf','muffin','strudel','babka','cracker','apple crisp','biscuit','cannoli','eclair','waffle','pancake','biscotti','cinnamon roll','crepe','gingersnap','gingerbread','macaron','macaroon','nougat','shortbread','scone']
 	type_churro = lookup(recipe_obj,churro_desserts)
+	items_added = []
 	if True: # makes four servings
 		if type_churro:
 			new_food_lst.append(food("water", 1,"cup","",""))
@@ -206,6 +226,7 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 					new_food_lst.append(food(food1.name,(food1.quant / recipe_obj.servings * 4),food1.meas,food1.desc,food1.prep))
 					new_food_name_lst.append(food1.name)
 					ingree.append(food1.name)
+					items_added.append(food1.name)
 			new_direc_obj_lst.append(direction(str3+str4,[ingree],['combine','roll'],[],[]))
 			recipe_obj.servings = 4
 		else:
@@ -243,6 +264,7 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 						new_food_lst.append(food(item.name,(item.quant / recipe_obj.servings * 12),item.meas,item.desc,item.prep))
 						new_food_name_lst.append(item.name)
 						ingredients_involved.append(item.name)
+						items_added.append(item.name)
 			ingredients_involved = ingredients_involved + ["sweetened condensed milk","evaporated milk","eggs","cream cheese","vanilla extract"]
 			new_direc_obj_lst.append(direction(str2 + str3,ingredients_involved,["blend","combine","pour","cover","pierce","peel"],["blender","tin","aluminum foil"],["1 minute"]))
 
@@ -254,6 +276,29 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
+
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			if len(items_added) == 2:
+				strr = strr + item + " "
+				count += 1
+			else:
+				strr += item + ", "
+				count += 1
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	if type_churro:
+		print("- Used key ingredients from the original recipe to make churros.")
+	else:
+		print("- Used key ingredients from the original recipe to make a flan.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
 
 	recipe_obj.cuisine = "Mexican"
 	recipe_obj.name += " transformed into Mexican"
@@ -311,7 +356,7 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 	#basic lists to cycle through to make changes
 	cut_half = ['cheese']
 	pasta = ['pasta','macaroni','noodle','spaghetti','fettucine','fettuccini','rotini','orzo','tortellini','potatoes','potato']
-	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham']
+	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham','shrimp','cod','salmon']
 	#initalize substitution list for making changes in the directions in reference to foods
 	subs = []
 	#name of the meat to substitue is initialize as empty, list is to account for multiple meats
@@ -386,9 +431,14 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 				diir.step = diir.step.replace("basil","garlic powder")
 
 
-	if "baking dish" in tools_lst or "dish" in tools_lst or ("bake" in methods_lst and "oven" in tools_lst):
-		make_into_casserole = True
-	elif meat_lst:
+	#if "baking dish" in tools_lst or "dish" in tools_lst or ("bake" in methods_lst and "oven" in tools_lst):
+		#make_into_casserole = True
+
+	for step in direc_obj_lst:
+		if "baking dish" in step.step or "casserole dish" in step.step or ("bake" in methods_lst and "oven" in tools_lst):
+			make_into_casserole = True
+
+	if meat_lst and not make_into_casserole:
 		make_into_tacos = True
 		add_tortilla_dir = True
 		if "corn or flour tortillas" not in food_name_lst:
@@ -398,16 +448,17 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 		if "mexican seasoning" not in food_name_lst:
 			food_obj_lst.append(food("mexican seasoning", 2,"tbsp","",""))
 			food_name_lst.append("mexican seasoning")
-	elif pasta_lst:
+	elif pasta_lst and not make_into_casserole:
 		make_into_rice = True
 		if "mexican seasoning" not in food_name_lst:
 			food_obj_lst.append(food("mexican seasoning", 2,"tbsp","",""))
 			food_name_lst.append("mexican seasoning")
 	else:
-		no_starch_meat = True
-		if "mexican seasoning" not in food_name_lst:
-			food_obj_lst.append(food("mexican seasoning", 2,"tbsp","",""))
-			food_name_lst.append("mexican seasoning")
+		if not make_into_casserole:
+			no_starch_meat = True
+			if "mexican seasoning" not in food_name_lst:
+				food_obj_lst.append(food("mexican seasoning", 2,"tbsp","",""))
+				food_name_lst.append("mexican seasoning")
 
 
 
@@ -667,6 +718,53 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 						direc.step = direc.step.replace(direc.time[0].split()[0], "18")
 						new_time = direc.time[0].split()
 						direc.time = ["18 " + new_time[1]]
+
+	lst_subs = []
+	if subs:
+		for sub in subs:
+			lst_subs.append('- Swapped ' + sub[0] + ' for ' + sub[1])
+	strrr = ''
+	count = 0
+	if make_into_rice:
+		if key_ingr:
+			for item in key_ingr:
+				if count == len(key_ingr) - 1:
+					strrr = strrr + "and " + item.name
+				else:
+					if len(key_ingr) == 2:
+						strrr = strrr + item.name + " "
+						count += 1
+					else:
+						strrr = strrr + item.name + ", "
+						count += 1
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	if make_into_tacos:
+		print("- Made the recipe into tacos!")
+		print("- Added mexican seasoning, beans, salsa, and rice.")
+		for ssub in lst_subs:
+			print(ssub)
+	elif make_into_casserole:
+		print("- Added mexican seasoning, beans, salsa, and sour cream to this casserole dish!")
+		for ssub in lst_subs:
+			print(ssub)
+	elif make_into_rice:
+		if key_ingr:
+			print("- Used key ingredients from the original recipe to make mexican rice.")
+			print("- Key ingredients added: ", strrr)
+		else:
+			print("- Added mexican seasoning")
+			for ssub in lst_subs:
+				print(ssub)
+	elif no_starch_meat:
+		print("- Added mexican seasoning to the original recipe")
+		print("- Served with beans, salsa, and sour cream!")
+		for ssub in lst_subs:
+			print(ssub)
+	print("===============\n")
+
 
 	recipe_obj.cuisine = "Mexican"
 	recipe_obj.name += " transformed into Mexican"

@@ -100,12 +100,14 @@ def transform_soup_indian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst
 	meat_str = ""
 	step1 = ""
 	ing_lst = []
+	items_added = []
 
 	for ing in meat_obj_lst:
 		meat_str = meat_str + ing.name + ", "
 		ing_lst.append(ing.name)
 		new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 6,ing.meas,ing.desc,ing.prep))
 		new_food_name_lst.append(ing.name)
+		items_added.append(ing.name)
 
 	if meat_str:
 		step1 = "Heat vegetable oil in large pan (use low heat); cook " + meat_str + "onion, garlic, ginger, chilies, spices and curry leaves, stirring, until onion is browned lightly, meat is cooked, and mixture is fragrant. Do not over brown the onion or else it will give the soup a burnt taste."
@@ -123,6 +125,7 @@ def transform_soup_indian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst
 		ing_lst_step2.append(veg.name)
 		new_food_lst.append(food(veg.name,veg.quant/recipe_obj.servings * 6,veg.meas,veg.desc,veg.prep))
 		new_food_name_lst.append(veg.name)
+		items_added.append(veg.name)
 
 	stepp2pt2 = "apple, potato, dhal, and vegetable broth to pan; simmer, covered, for about 15 minutes or until vegetables are just tender. Discard cardamom pods and curry leaves."
 	new_direc_obj_lst.append(direction(stepp2+stepp2pt2,ing_lst_step2,['add','simmer','discard'],[],['15 minutes']))
@@ -133,6 +136,27 @@ def transform_soup_indian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
+
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			if len(items_added) == 2:
+				strr = strr + item + " "
+				count += 1
+			else:
+				strr += item + ", "
+				count += 1
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	print("- Used key ingredients from the original recipe to make Indian Mulligatawny Soup.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
 
 	recipe_obj.servings = 6
 	recipe_obj.cuisine = "Indian"
@@ -170,6 +194,7 @@ def transform_dessert_indian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_
 	new_food_lst.append(food("vanilla extract", 0.5,"teaspoon","",""))
 	new_food_name_lst.append("vanilla extract")
 
+	items_added = []
 	dessert_step = "Melt ghee in a large saucepan over medium-high heat. Add vermicelli; cook and stir until golden, 3 to 5 minutes. Pour in milk and bring to a boil. Reduce heat to medium-low. Add evaporated milk, cashews, raisins, "
 	ingreed = ['ghee','vermicelli pasta','milk','evaporated milk','cashews','raisins','sugar']
 	key_ingrr = get_key_food(recipe_obj)
@@ -179,12 +204,35 @@ def transform_dessert_indian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_
 			new_food_lst.append(food(food1.name,(food1.quant / recipe_obj.servings * 4),food1.meas,food1.desc,food1.prep))
 			new_food_name_lst.append(food1.name)
 			ingreed.append(food1.name)
+			items_added.append(food1.name)
 	dessert_step2 = " and sugar. Simmer until pudding begins to thicken, about 10 minutes. Serve warm or cold."
 	new_direc_obj_lst.append(direction(dessert_step+dessert_step2,ingreed,['melt','add','cook','stir','pour','boil','simmer','serve'],['large saucepan'],['3 to 5 minutes','10 minutes']))
 
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
+
+
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			if len(items_added) == 2:
+				strr = strr + item + " "
+				count += 1
+			else:
+				strr += item + ", "
+				count += 1
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	print("- Used key ingredients from the original recipe to make Indian Vermicelli Pudding.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
 
 	recipe_obj.servings = 8
 	recipe_obj.cuisine = "Indian"
@@ -235,6 +283,7 @@ def transform_cuisine_main_indian(recipe_obj, food_obj_lst, food_name_lst, direc
 	new_food_lst = []
 	new_food_name_lst = []
 	new_direc_obj_lst = []
+	items_added = []
 
     # makes 6 servings
 	new_food_lst.append(food("olive oil", 1,"tablespoons","",""))
@@ -332,6 +381,7 @@ def transform_cuisine_main_indian(recipe_obj, food_obj_lst, food_name_lst, direc
 		for item in meat_lst:
 			step3ingr.append(item)
 			step4ingr.append(item)
+			items_added.append(item)
 		step3met.append("return")
 	else:
 		step3 = "Add tomato sauce, coconut milk, cloves, cardamom and cinnamon stick to skillet. Season with salt to taste and stir all together."
@@ -345,14 +395,31 @@ def transform_cuisine_main_indian(recipe_obj, food_obj_lst, food_name_lst, direc
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
 
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			if len(items_added) == 2:
+				strr = strr + item + " "
+				count += 1
+			else:
+				strr += item + ", "
+				count += 1
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	print("- Used key ingredients from the original recipe to make Indian Curry.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
+
 	recipe_obj.servings = 6
 	recipe_obj.cuisine = "Indian"
 	recipe_obj.name += " transformed into Indian"
 
-	for foodzz in food_obj_lst:
-		foodzz.print_food()
-	for ddir in direc_obj_lst:
-		ddir.print_dir()
 
 	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
