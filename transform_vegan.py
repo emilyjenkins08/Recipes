@@ -34,7 +34,7 @@ def to_vegan(recipe):
         for dir in directions:
             for ing in dir.ingredient:
                 if non_vegan in ing and SUBS[non_vegan] not in ing:
-                    dir.step = make_substitutions(ing, SUBS[non_vegan], dir.step)
+                    dir.step = dir.step.replace(ing, SUBS[non_vegan])
                     dir.ingredient.remove(ing)
                     for ingredient in ingredient_info:
                         if ingredient.name == ing:
@@ -47,31 +47,28 @@ def to_vegan(recipe):
                             elif sub_name == "banana":
                                 sub_quant = ingredient.quant * .25
                                 sub_meas = "cups"
-                                sub_prep = ["mashed"]
+                                sub_prep = "mashed"
                             else:
                                 sub_quant = ingredient.quant
                                 sub_meas = ingredient.meas
-                                sub_prep = ["mashed"]
+                                sub_prep = "mashed"
                             sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
                             dir.ingredient.append(sub.name)
                             ingredient_info.append(sub)
                             break
-                elif any([cheese in ing for cheese in CHEESE_NAMES]):
-                    for dir in directions:
-                        dir.step = make_substitutions(ing, SUBS["cheese"], dir.step)
-                        dir.ingredient.remove(ing)
-                        for ingredient in ingredient_info:
-                            if ingredient.name == ing:
-                                ingredient_info.remove(ingredient)
-                                sub_name = SUBS["cheese"]
-                                sub_quant = ingredient.quant
-                                sub_meas = ingredient.meas
-                                sub_prep = ingredient.prep
-                                sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
-                                dir.ingredient.append(sub.name)
-                                ingredient_info.append(sub)
+                elif any([cheese in ing and "cheese" not in ing for cheese in CHEESE_NAMES]):
+                    dir.step = make_substitutions(ing, SUBS["cheese"], dir.step)
+                    dir.ingredient.remove(ing)
+                    for ingredient in ingredient_info:
+                        if ingredient.name == ing:
+                            ingredient_info.remove(ingredient)
+                            sub_name = SUBS["cheese"]
+                            sub_quant = ingredient.quant
+                            sub_meas = ingredient.meas
+                            sub_prep = ingredient.prep
+                            sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
+                            dir.ingredient.append(sub.name)
+                            ingredient_info.append(sub)
 
     return make_recipe_obj(recipe, ingredient_info, directions)
-
-
 
