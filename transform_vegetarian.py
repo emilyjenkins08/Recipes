@@ -30,9 +30,9 @@ CHICKEN_TIMES = {'ingredient': 'chicken',
                  'pan-fry': '10 minutes',
                  'grill': '10 minutes',
                  'bake': '25 minutes'}
-tofu_ingredient = food('tofu', 175, 'mL', ['extra-firm', 'non-silken'], ['pressed', 'cubed'])
+tofu_ingredient = food('tofu', 50, 'mL', ['extra-firm', 'non-silken'], ['pressed', 'cubed'])
 portobello_ingredient = food('portobello mushrooms', 1, '', [], [])
-baby_bella_ingredient = food('baby bella mushrooms', 1, 'cups', [], ['diced'])
+baby_bella_ingredient = food('baby bella mushrooms', 0.5, 'cups', [], 'diced')
 
 
 def remove_meat_methods(directions, recipe_meats, sub, new_directions):
@@ -51,7 +51,6 @@ def remove_meat_methods(directions, recipe_meats, sub, new_directions):
                                         direction.tool.remove(tool)
                             else:
                                 if "remove" in sent.lower() or "cut" in sent.lower():
-                                    print(sent)
                                     step_sents.remove(sent)
                                     for tool in direction.tool:
                                         if tool in sent:
@@ -216,7 +215,7 @@ def to_vegetarian(recipe):
             times = TOFU_TIMES
         else:
             if "fry" not in master_methods and "grill" not in master_methods and "bake" not in master_methods:
-                portobello_ingredient.prep = ['diced']
+                portobello_ingredient.prep = 'diced'
             else:
                 portobello_ingredient.prep = []
             sub = portobello_ingredient
@@ -251,7 +250,8 @@ def to_vegetarian(recipe):
             for meat in recipe_meats[1:]:
                 new_ingredient_info, new_directions = remove_meat(meat, new_ingredient_info, new_directions)
     else:
-        return "already veg"
+        print("This recipe is already vegetarian")
+        return recipe
     for dir in new_directions:
         dir.print_dir()
     return make_recipe_obj(recipe, new_ingredient_info, new_directions)
@@ -351,10 +351,10 @@ def add_meat(servings, ingredients, directions, meat, recipe_name):
         else:
             for dir in directions:
                 if "heat" in dir.method:
-                    split = dir.split(".")
+                    split = dir.step.split(".")
                     for i, sent in enumerate(split):
                         if "heat" in sent.lower() and ("skillet" in sent or "pan" in sent or "pot" in sent):
-                            split(i + 1, "Add chicken breast and cook for about 10 minutes, until cooked through.")
+                            split.insert(i + 1, "Add chicken breast and cook for about 10 minutes, until cooked through")
                             break
                             break
                     dir.step = ".".join(split)
@@ -400,40 +400,43 @@ def from_vegetarian(recipe):
     full_ingredient_info, ingredients = extract_food_info(recipe.ingredients)
     directions, master_tools, master_methods = extract_directional_info(recipe.directions, ingredients)
     chicken_breast = food("chicken breast", .25, "pounds", [], ['boneless', 'skinless'])
-    shredded_chicken = food("shredded chicken", 1, "cups", [], [])
+    shredded_chicken = food("shredded chicken", 0.5, "cups", [], [])
     bacon = food("bacon", 1, "strips", [], [])
-    ground_beef = food("ground beef", 3, "ounces", [], [])
-    ham = food("ham", 2, "ounces", [], ['sliced'])
-    shrimp = food("shrimp", 4, "ounces", ['tailless'], ['peeled', 'deveined'])
-    meat_sub = chicken_breast
+    ground_beef = food("ground beef", 1.5, "ounces", [], [])
+    ham = food("ham", 2, "ounces", [], 'sliced')
+    shrimp = food("shrimp", 2, "ounces", 'tailless', ['peeled', 'deveined'])
+    subbed = False
     for ingredient in full_ingredient_info:
         if any([meat in ingredient.name for meat in MEATS]):
-            return "already contains meat"
+            print("This recipe already contains meat")
+            return recipe
     for ingredient in full_ingredient_info:
         if "jackfruit" in ingredient.name:
+            subbed = True
             full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, shredded_chicken,
                                                                  ingredient)
         elif "tofu" in ingredient.name:
+            subbed = True
             if "grilled" in recipe.name.lower() or "fried" in recipe.name.lower():
                 chicken_breast.prep = []
             else:
-                chicken_breast.prep = ['cubed']
+                chicken_breast.prep = 'cubed'
             full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, chicken_breast,
                                                                  ingredient)
+    if not subbed:
+        if "salad" in recipe.name:
+            meat_sub = chicken_breast
+        elif any([soup in recipe.name for soup in SOUPS]):
+            meat_sub = bacon
+        elif any([cass in recipe.name for cass in CASSEROLES]):
+            meat_sub = ground_beef
+        elif any([sandwich in recipe.name for sandwich in SANDWICH]):
+            meat_sub = ham
+        elif any([pasta in recipe.name for pasta in PASTAS]) or any([rice in recipe.name for rice in RICE]):
+            meat_sub = shrimp
         else:
-            if "salad" in recipe.name:
-                meat_sub = chicken_breast
-            elif any([soup in recipe.name for soup in SOUPS]):
-                meat_sub = bacon
-            elif any([cass in recipe.name for cass in CASSEROLES]):
-                meat_sub = ground_beef
-            elif any([sandwich in recipe.name for sandwich in SANDWICH]):
-                meat_sub = ham
-            elif any([pasta in recipe.name for pasta in PASTAS]) or any([rice in recipe.name for rice in RICE]):
-                meat_sub = shrimp
-            else:
-                chicken_breast.prep = ['cubed']
-                meat_sub = chicken_breast
-            full_ingredient_info, directions = add_meat(recipe.servings, full_ingredient_info, directions, meat_sub,
-                                                        recipe.name)
+            chicken_breast.prep = 'cubed'
+            meat_sub = chicken_breast
+        full_ingredient_info, directions = add_meat(recipe.servings, full_ingredient_info, directions, meat_sub,
+                                                    recipe.name)
     return make_recipe_obj(recipe, full_ingredient_info, directions)
