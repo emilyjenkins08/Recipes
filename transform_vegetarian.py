@@ -1,5 +1,5 @@
-from parse import extract_food_info, extract_directional_info, food, direction
-from transform_healthy import make_substitutions, make_recipe_obj
+from parse import extract_food_info, extract_directional_info, food, direction, make_recipe_obj
+from transform_healthy import make_substitutions
 
 SOUPS = ['soup', 'chili', 'stew', 'pho', 'miso', 'gazpacho', 'bisque', 'chowder']
 PASTAS = ['pasta', 'ziti', 'lo mein', 'ravioli', 'fettuccine', 'penne', 'noodle', 'pad thai',
