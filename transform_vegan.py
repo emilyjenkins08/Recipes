@@ -30,10 +30,14 @@ def to_vegan(recipe):
     recipe = to_vegetarian(recipe)
     ingredient_info, ingredient_names = extract_food_info(recipe.ingredients)
     directions, tools, methods = extract_directional_info(recipe.directions, ingredient_names)
+    subbed = []
     for non_vegan in SUBS.keys():
         for dir in directions:
             for ing in dir.ingredient:
                 if non_vegan in ing and SUBS[non_vegan] not in ing:
+                    sub_expr = "%s with %s" %(ing, SUBS[non_vegan])
+                    if sub_expr not in subbed:
+                        subbed.append(sub_expr)
                     dir.step = dir.step.replace(ing, SUBS[non_vegan])
                     dir.ingredient.remove(ing)
                     for ingredient in ingredient_info:
@@ -69,6 +73,13 @@ def to_vegan(recipe):
                             sub = food(sub_name, sub_quant, sub_meas, [], sub_prep)
                             dir.ingredient.append(sub.name)
                             ingredient_info.append(sub)
-
+    print("===============")
+    print("CHANGE LOG")
+    if not subbed:
+        print("This recipe was already vegan!")
+    else:
+        print("Replaced the following pairs to make the recipe vegan:")
+        for sub in subbed:
+            print(sub)
     return make_recipe_obj(recipe, ingredient_info, directions)
 
