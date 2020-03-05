@@ -30,9 +30,9 @@ CHICKEN_TIMES = {'ingredient': 'chicken',
                  'pan-fry': '10 minutes',
                  'grill': '10 minutes',
                  'bake': '25 minutes'}
-tofu_ingredient = food('tofu', 50, 'mL', ['extra-firm', 'non-silken'], ['pressed', 'cubed'])
-portobello_ingredient = food('portobello mushrooms', 1, '', [], [])
-baby_bella_ingredient = food('baby bella mushrooms', 0.5, 'cups', [], 'diced')
+tofu_ingredient = food('tofu', 50, 'mL', 'extra-firm non-silken', 'pressed cubed')
+portobello_ingredient = food('portobello mushrooms', 1, '', '', '')
+baby_bella_ingredient = food('baby bella mushrooms', 0.5, 'cups', '', 'diced')
 
 
 def remove_meat_methods(directions, recipe_meats, sub, new_directions):
@@ -428,7 +428,7 @@ def from_vegetarian(recipe):
         if "jackfruit" in ingredient.name:
             print("- Replacing jackfruit with shredded chicken")
             subbed = True
-            full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, shredded_chicken,
+            full_ingredient_info, directions = replace_with_meat(recipe.servings, full_ingredient_info, directions, shredded_chicken,
                                                                  ingredient)
         elif "tofu" in ingredient.name:
             subbed = True
@@ -438,7 +438,7 @@ def from_vegetarian(recipe):
             else:
                 print("- Replacing tofu with cut chicken breast")
                 chicken_breast.prep = 'cubed'
-            full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, chicken_breast,
+            full_ingredient_info, directions = replace_with_meat(recipe.servings, full_ingredient_info, directions, chicken_breast,
                                                                  ingredient)
     if not subbed:
         if "salad" in recipe.name:
