@@ -69,22 +69,25 @@ def remove_punc_lower(text):
 def get_num(arr):
     num = 0
     for text in arr:
-        if len(text) == 0:
-            return num
-        if not text[0].isdigit() or not remove_punc_lower(text).isdigit():
-            return num
-        if '/' in text:
-            ind = text.index('/')
-            top = text[:ind]
-            bottom = text[ind + 1:]
-            num += (int(top) / int(bottom))
-        elif '.' in text:
-            ind = text.index('.')
-            top = text[:ind]
-            bottom = text[ind + 1:]
-            num += int(top) + int(bottom) / 10 ** len(bottom)
-        else:
-            num += float(text)
+        try:
+            if len(text) == 0:
+                return num
+            if not text[0].isdigit() or not remove_punc_lower(text).isdigit():
+                return num
+            if '/' in text:
+                ind = text.index('/')
+                top = text[:ind]
+                bottom = text[ind + 1:]
+                num += (int(top) / int(bottom))
+            elif '.' in text:
+                ind = text.index('.')
+                top = text[:ind]
+                bottom = text[ind + 1:]
+                num += int(top) + int(bottom) / 10 ** len(bottom)
+            else:
+                num += float(text)
+        except:
+            pass
     return num
 
 
@@ -92,6 +95,8 @@ def get_meas(wrd_lst):
     better_measurements = ['bunch', 'clove', 'cup', 'ounce', 'pinch', 'pint', 'pound', 'teaspoon',
                            'tablespoon']
     for i in wrd_lst:
+        if len(i) == 0:
+            continue
         if i in better_measurements:
             return i
         else:
@@ -104,6 +109,8 @@ def fix_name(name, prep_lst, des_lst):
     def lookup(str1, lst):
         str_lst = str1.split()
         for i in str_lst:
+            if len(i) == 0:
+                continue
             if i in lst:
                 return i
             elif i[-1] in [',', '.', ';', '-'] and i[:-1] in lst:
@@ -125,10 +132,13 @@ def fix_name(name, prep_lst, des_lst):
         other_bool = lookup(name, other_lst)
     while '  ' in name:
         name = name.replace('  ', ' ')
-    while name[0] == " ":
-        name = name[1:]
-    while name[-1] in [',','.',';','-',' ']:
-        name = name[:-1]
+    try:
+        while name[0] == " ":
+            name = name[1:]
+        while name[-1] in [',','.',';','-',' ']:
+            name = name[:-1]
+    except:
+        pass
     return name
 
 
@@ -171,6 +181,9 @@ def extract_food_info(ing_lst):
             slt.remove("on")
         while i < len(slt):
             wrd = slt[i]
+            if len(wrd) == 0:
+                i += 1
+                continue
             if wrd[0] == '(':
                 i += 1
                 continue
@@ -223,13 +236,10 @@ def extract_food_info(ing_lst):
         while end <= start and end < len(slt):
             end += 1
         name = slt[start:end + 1]
-        j, start = 0, 0
-        while j < len(name):
-            if name[j] in preparation or name[j] in description:
-                # start = max(start, j + 1)
-                pass
-            j += 1
-        name = ' '.join(name[start:])
+        name = ' '.join(name)
+        if len(name) == 0:
+            i += 1
+            continue
         if name[-1] == ',':
             name = name[:-1]
         name = fix_name(name, preparation, description)
@@ -274,6 +284,8 @@ def exist(old_food, step_text):
     while ind < len(text_slt):
         wrd = text_slt[ind]
         wrd_mod = remove_punc_lower(wrd)
+        if len(wrd_mod) == 0:
+            break
         if wrd_mod in old_food_slt:
             return True
         elif wrd_mod[-1] == 's' and wrd_mod[:-1] in old_food_slt:
@@ -320,6 +332,8 @@ def extract_directional_info(steps, ingredient_lst):
                 while start > 0 and new_step[start] != " ":
                     digits = new_step[start] + digits
                     start -= 1
+                if not digits.isdigit():
+                    continue
                 if int(digits) > 1:
                     str = time + 's'
                 else:

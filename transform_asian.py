@@ -17,7 +17,13 @@ def lookup(ing, lst):
 
 
 def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
-	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham']
+	meat = ['pork chop', 'lamb chop', 'lamb', 'mutton', 'beef', 'rump', 'steak', 'ribeye', 'fillet', 'loin',
+	         'brisket', 'pork', 'ribs', 'veal', 'turkey', 'wing', 'chicken', 'thigh', 'breast', 'liver',
+	         'bone', 'drum sticks', 'duck', 'belly', 'shoulder', 'fish', 'salmon', 'tuna', 'halibut', 'walleye crudo',
+	         'tilapia', 'sardine', 'mackerel', 'trout', 'cod', 'herring', 'anchovy', 'trout', 'perch', 'pollock', 'oyster',
+	         'mussels', 'lobster', 'carp', 'shrimp', 'snapper', 'bass', 'seafood', 'crab', 'squid', 'octopus', 'clam',
+	         'scallop', 'snail', 'escargot', 'prawn', 'langoustine', 'ham', 'bacon', 'pancetta', 'prosciutto', 'sausage',
+	         'calamari', 'venison', 'chuck','pork']
 	vegetable = ['asparagus','cucumber','celery','cabbage','spinach','lettuce','turnip','carrot','garlic','onion','parsnip','kale','brussels','tomato','okra','broccoli','radish','collard','artichoke','cauliflower','ginger','watercress','pumpkin','arugula','tomatillo','pepper','turnip','chard','horseradish','radish','fennel','pea','zucchini','rutabaga','eggplant','mushroom','squash']
 
 	meat_lst = []
@@ -154,7 +160,9 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 	strr = ''
 	count = 0
 	for item in items_added:
-		if count == len(items_added) - 1:
+		if len(items_added) == 1:
+			strr = item
+		elif count == len(items_added) - 1:
 			strr = strr + "and " + item
 		else:
 			if len(items_added) == 2:
@@ -232,7 +240,9 @@ def transform_dessert_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_l
 	strr = ''
 	count = 0
 	for item in items_added:
-		if count == len(items_added) - 1:
+		if len(items_added) == 1:
+			strr = item
+		elif count == len(items_added) - 1:
 			strr = strr + "and " + item
 		else:
 			if len(items_added) == 2:
@@ -274,7 +284,13 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 
 
 	#basic lists to cycle through to make changes
-	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham']
+	meat = ['pork chop', 'lamb chop', 'lamb', 'mutton', 'beef', 'rump', 'steak', 'ribeye', 'fillet', 'loin',
+	         'brisket', 'pork', 'ribs', 'veal', 'turkey', 'wing', 'chicken', 'thigh', 'breast', 'liver',
+	         'bone', 'drum sticks', 'duck', 'belly', 'shoulder', 'fish', 'salmon', 'tuna', 'halibut', 'walleye crudo',
+	         'tilapia', 'sardine', 'mackerel', 'trout', 'cod', 'herring', 'anchovy', 'trout', 'perch', 'pollock', 'oyster',
+	         'mussels', 'lobster', 'carp', 'shrimp', 'snapper', 'bass', 'seafood', 'crab', 'squid', 'octopus', 'clam',
+	         'scallop', 'snail', 'escargot', 'prawn', 'langoustine', 'ham', 'bacon', 'pancetta', 'prosciutto', 'sausage',
+	         'calamari', 'venison', 'chuck','pork']
 	vegetable = ['asparagus','cucumber','celery','cabbage','spinach','lettuce','turnip','carrot','garlic','onion','parsnip','kale','brussels','tomato','okra','broccoli','radish','collard','artichoke','cauliflower','ginger','watercress','pumpkin','arugula','tomatillo','pepper','turnip','chard','horseradish','radish','fennel','pea','zucchini','rutabaga','eggplant','mushroom','squash']
 
 	#initalize substitution list for making changes in the directions in reference to foods
@@ -352,7 +368,7 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 		new_food_name_lst.append(ing.name)
 		items_added.append(ing.name)
 	step1pt2 = "garlic, and oyster sauce, and stir-fry for 10 minutes."
-	step1 = step1pt1 + step1inoikjncxztermediate + step1pt2
+	step1 = step1pt1 + step1intermediate + step1pt2
 	new_direc_obj_lst.append(direction(step1,["oil","garlic",'oyster sauce'],['heat','add','stir-fry'],['wok or large heavy skillet'],['10 minutes']))
 
 	step2pt1 = "Stir in "
@@ -378,7 +394,9 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 	strr = ''
 	count = 0
 	for item in items_added:
-		if count == len(items_added) - 1:
+		if len(items_added) == 1:
+			strr = item
+		elif count == len(items_added) - 1:
 			strr = strr + "and " + item
 		else:
 			if len(items_added) == 2:
