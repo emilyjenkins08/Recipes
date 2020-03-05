@@ -80,6 +80,7 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 	new_food_name_lst.append("red pepper flakes")
 
 	step1 = "Heat 1-2 tablespoons olive oil in a medium-sized stockpot over medium heat. Add the "
+	items_added = []
 	ing_lst = []
 	if len(meat_lst) > 2:
 		count = 0
@@ -89,12 +90,14 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 				ing_lst.append(ing.name)
 				new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
 				new_food_name_lst.append(ing.name)
+				items_added.append(ing.name)
 			else:
 				step1 = step1 + ing.name + ", "
 				count += 1
 				ing_lst.append(ing.name)
 				new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
 				new_food_name_lst.append(ing.name)
+				items_added.append(ing.name)
 	elif len(meat_lst) == 2:
 		count = 0
 		for ing in meat_obj_lst:
@@ -103,15 +106,18 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 				ing_lst.append(ing.name)
 				new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
 				new_food_name_lst.append(ing.name)
+				items_added.append(ing.name)
 			else:
 				step1 = step1 + ing.name + " "
 				count += 1
 				ing_lst.append(ing.name)
 				new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
 				new_food_name_lst.append(ing.name)
+				items_added.append(ing.name)
 	else:
 		for ing in meat_obj_lst:
 			step1 = step1 + ing.name
+			items_added.append(ing.name)
 	step1 = step1 + " to the pot. Saute until meat is fully cooked and no longer pink."
 	ing_lst.append("olive oil")
 	new_direc_obj_lst.append(direction(step1,ing_lst,['saute','heat','add'],['stockpot'],[]))
@@ -130,6 +136,7 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 			new_food_name_lst.append(ing.name)
 			ing_invol.append(ing.name)
 			step4 += ing.name + ", "
+			items_added.append(ing.name)
 
 	step4pt2 = "minced garlic, and ginger to the shallots and mix. Cook, stirring occasionally, for 1-2 minutes or until garlic and ginger is fragrant."
 	new_direc_obj_lst.append(direction(step4 + step4pt2,ing_invol,['add','mix','cook','stir'],[],['1-2 minutes']))
@@ -143,6 +150,27 @@ def transform_soup_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
+
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			if len(items_added) == 2:
+				strr = strr + item + " "
+				count += 1
+			else:
+				strr += item + ", "
+				count += 1
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	print("- Used key ingredients from the original recipe to make an Asian Ginger Garlic Noodle Soup with Bok Choy.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
 
 	recipe_obj.servings = 4
 	recipe_obj.cuisine = "Asian"
@@ -187,17 +215,40 @@ def transform_dessert_asian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_l
 	step2pt2 = "sugar and salt. Cook over medium heat until thick and creamy, 15 to 20 minutes. Stir in remaining 1/2 cup milk, beaten egg, and raisins; cook 2 minutes more, stirring constantly. Remove from heat and stir in butter and vanilla."
 	ingreed = ['rice','milk','sugar','salt','egg','raisins','butter','vanilla extract']
 	key_ingrr = get_key_food(recipe_obj)
+	items_added = []
 	if key_ingrr:
 		for food1 in key_ingrr:
 			step2 = step2 + food1.name + ", "
 			new_food_lst.append(food(food1.name,(food1.quant / recipe_obj.servings * 4),food1.meas,food1.desc,food1.prep))
 			new_food_name_lst.append(food1.name)
 			ingreed.append(food1.name)
+			items_added.append(food1.name)
 	new_direc_obj_lst.append(direction(step2+step2pt2,ingreed,['combine','cook','stir','remove'],['saucepan'],['15 to 20 minutes']))
 
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
+
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			if len(items_added) == 2:
+				strr = strr + item + " "
+				count += 1
+			else:
+				strr += item + ", "
+				count += 1
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	print("- Used key ingredients from the original recipe to make an Asian Rice Pudding.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
 
 	recipe_obj.servings = 4
 	recipe_obj.cuisine = "Asian"
@@ -292,14 +343,16 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 	new_food_lst.append(food("cornstarch", 1,"tablespoon","",""))
 	new_food_name_lst.append("cornstarch")
 
+	items_added = []
 	step1pt1 = "Heat oil in a wok or large heavy skillet."
 	step1intermediate = " Add "
 	for ing in meat_obj_lst:
 		step1intermediate = step1intermediate + ing.name + ", "
 		new_food_lst.append(food(ing.name,ing.quant / recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
 		new_food_name_lst.append(ing.name)
+		items_added.append(ing.name)
 	step1pt2 = "garlic, and oyster sauce, and stir-fry for 10 minutes."
-	step1 = step1pt1 + step1intermediate + step1pt2
+	step1 = step1pt1 + step1inoikjncxztermediate + step1pt2
 	new_direc_obj_lst.append(direction(step1,["oil","garlic",'oyster sauce'],['heat','add','stir-fry'],['wok or large heavy skillet'],['10 minutes']))
 
 	step2pt1 = "Stir in "
@@ -309,6 +362,7 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 			step1intermediate = step1intermediate + ing.name + ", "
 			new_food_lst.append(food(ing.name,ing.quant / recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
 			new_food_name_lst.append(ing.name)
+			items_added.append(ing.name)
 	step2pt2 = "broccoli, green pepper, carrots, cabbage, celery, bean sprouts, zucchini, and green onions. Season with salt, and stir-fry for 6 to 8 minutes."
 	step2 = step2pt1 + step2intermediate + step2pt2
 	new_direc_obj_lst.append(direction(step2,['broccoli','green pepper','carrots','cabbage','celery','bean sprouts','zucchini','green onions','salt'],['stir','season','stir-fry'],[],['6 to 8 minutes']))
@@ -320,6 +374,27 @@ def transform_cuisine_main_asian(recipe_obj, food_obj_lst, food_name_lst, direc_
 	food_obj_lst = new_food_lst
 	food_name_lst = new_food_name_lst
 	direc_obj_lst = new_direc_obj_lst
+
+	strr = ''
+	count = 0
+	for item in items_added:
+		if count == len(items_added) - 1:
+			strr = strr + "and " + item
+		else:
+			if len(items_added) == 2:
+				strr = strr + item + " "
+				count += 1
+			else:
+				strr += item + ", "
+				count += 1
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	print("- Used key ingredients from the original recipe to make an Asian stir-fry.")
+	if strr:
+		print("- Key ingredients added from original recipe: ", strr)
+	print("===============\n")
 
 	recipe_obj.servings = 4
 	recipe_obj.cuisine = "Asian"
