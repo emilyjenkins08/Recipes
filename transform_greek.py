@@ -121,11 +121,12 @@ def transform_soup_greek(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst,
     ing_lst_step2 = ['tomatoes','great Northern beans','chicken broth','tomato sauce','water','garlic','bacon','parsley','garlic powder','salt','pepper','basil']
     stepp2 = "In the stock pot, combine diced tomatoes, "
     for veg in veggie_obj_lst:
-        stepp2 = stepp2 + veg.name + ", "
-        ing_lst_step2.append(veg.name)
-        new_food_lst.append(food(veg.name,veg.quant/recipe_obj.servings * 8,veg.meas,veg.desc,veg.prep))
-        new_food_name_lst.append(veg.name)
-        items_added.append(veg.name)
+        if not lookup(veg,new_food_name_lst):
+            stepp2 = stepp2 + veg.name + ", "
+            ing_lst_step2.append(veg.name)
+            new_food_lst.append(food(veg.name,veg.quant/recipe_obj.servings * 8,veg.meas,veg.desc,veg.prep))
+            new_food_name_lst.append(veg.name)
+            items_added.append(veg.name)
 
     stepp2pt2 = "beans, spinach, chicken broth, tomato sauce, water, garlic, bacon, parsley, garlic powder, salt, pepper, and basil. Bring to a boil, and let simmer for 40 minutes, covered."
     new_direc_obj_lst.append(direction(stepp2+stepp2pt2,ing_lst_step2,['combine','simmer','boil'],[],['40 minutes']))
@@ -411,7 +412,7 @@ def transform_cuisine_main_greek(recipe_obj, food_obj_lst, food_name_lst, direc_
     #step 3
     step2 = "Spread tomato pesto onto one side of each pita bread and place them pesto-side up on a baking sheet. Top pitas with tomatoes, spinach, mushrooms, "
     for veg in veggie_obj_lst:
-        if veg.name not in new_food_name_lst:
+        if not lookup(veg,new_food_name_lst) and not lookup(veg,items_added):
             new_food_lst.append(food(veg.name,veg.quant/recipe_obj.servings * 6,veg.meas,veg.desc,veg.prep))
             new_food_name_lst.append(veg.name)
             iing.append(veg.name)

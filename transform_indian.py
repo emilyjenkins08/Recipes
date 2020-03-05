@@ -127,11 +127,12 @@ def transform_soup_indian(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst
 	ing_lst_step2 = ['carrot','apple','potato','dhal','vegetable broth','cardamom','curry']
 	stepp2 = "Add carrot, "
 	for veg in veggie_obj_lst:
-		stepp2 = stepp2 + veg.name + ", "
-		ing_lst_step2.append(veg.name)
-		new_food_lst.append(food(veg.name,veg.quant/recipe_obj.servings * 6,veg.meas,veg.desc,veg.prep))
-		new_food_name_lst.append(veg.name)
-		items_added.append(veg.name)
+		if not lookup(veg,new_food_name_lst):
+			stepp2 = stepp2 + veg.name + ", "
+			ing_lst_step2.append(veg.name)
+			new_food_lst.append(food(veg.name,veg.quant/recipe_obj.servings * 6,veg.meas,veg.desc,veg.prep))
+			new_food_name_lst.append(veg.name)
+			items_added.append(veg.name)
 
 	stepp2pt2 = "apple, potato, dhal, and vegetable broth to pan; simmer, covered, for about 15 minutes or until vegetables are just tender. Discard cardamom pods and curry leaves."
 	new_direc_obj_lst.append(direction(stepp2+stepp2pt2,ing_lst_step2,['add','simmer','discard'],[],['15 minutes']))
@@ -345,13 +346,13 @@ def transform_cuisine_main_indian(recipe_obj, food_obj_lst, food_name_lst, direc
 				if count1 == len(meat_lst) - 1:
 					meat_str = meat_str + "and " + ing.name
 					ing_lst.append(ing.name)
-					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
+					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 6,ing.meas,ing.desc,ing.prep))
 					new_food_name_lst.append(ing.name)
 				else:
 					meat_str = meat_str + ing.name + ", "
 					count1 += 1
 					ing_lst.append(ing.name)
-					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
+					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 6,ing.meas,ing.desc,ing.prep))
 					new_food_name_lst.append(ing.name)
 		elif len(meat_lst) == 2:
 			count = 0
@@ -359,19 +360,19 @@ def transform_cuisine_main_indian(recipe_obj, food_obj_lst, food_name_lst, direc
 				if count == len(meat_lst) - 1:
 					meat_str = meat_str + "and " + ing.name
 					ing_lst.append(ing.name)
-					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
+					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 6,ing.meas,ing.desc,ing.prep))
 					new_food_name_lst.append(ing.name)
 				else:
 					meat_str = meat_str + ing.name + " "
 					count += 1
 					ing_lst.append(ing.name)
-					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
+					new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 6,ing.meas,ing.desc,ing.prep))
 					new_food_name_lst.append(ing.name)
 		else:
 			for ing in meat_obj_lst:
 				meat_str = meat_str + ing.name
 				ing_lst.append(ing.name)
-				new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 4,ing.meas,ing.desc,ing.prep))
+				new_food_lst.append(food(ing.name,ing.quant/recipe_obj.servings * 6,ing.meas,ing.desc,ing.prep))
 				new_food_name_lst.append(ing.name)
 
 		sttr = "Rinse " + meat_str + " and pat dry; season with salt and pepper to taste. Heat oil in a large skillet over medium high heat, then saute " + meat_str + " until browned. Remove " + meat_str + " from skillet and set aside."
@@ -384,8 +385,17 @@ def transform_cuisine_main_indian(recipe_obj, food_obj_lst, food_name_lst, direc
 	new_direc_obj_lst.append(direction(sttr,ing_lst,met_lst,['skillet'],[]))
 
     #step 2
-	step2 = "Saute onions in skillet until translucent; add ginger and garlic and saute until fragrant, then stir in curry powder."
-	new_direc_obj_lst.append(direction(step2,['onions','ginger root','garlic','curry powder'],['saute','add','stir'],['skillet'],[]))
+	step2inlst = ['onions','ginger root','garlic','curry powder']
+	step2 = "Saute onions in skillet until translucent; add "
+	for veg in veggie_obj_lst:
+		if not lookup(veg,new_food_name_lst):
+			step2 = step2 + veg.name + ", "
+			step2inlst.append(veg.name)
+			new_food_lst.append(food(veg.name,veg.quant/recipe_obj.servings * 6,veg.meas,veg.desc,veg.prep))
+			new_food_name_lst.append(veg.name)
+			items_added.append(veg.name)
+	step2pt2 = "ginger and garlic and saute until fragrant, then stir in curry powder."
+	new_direc_obj_lst.append(direction(step2+step2pt2,step2inlst,['saute','add','stir'],['skillet'],[]))
 
     #step 3
 	step3ingr = ['tomato sauce','coconut milk','cloves','cardamom','cinnamon stick','salt']
