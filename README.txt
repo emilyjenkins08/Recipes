@@ -37,11 +37,31 @@ will be substituted for 'yogurt'. Along with this, foods that contain healthy de
 'whole grain' and 'low fat' for example). The function will also turn any sauteing cooking methods 
 to frying and decreasing the serving size so the serving portion is increased.
 
-To vegetarian...
+To vegetarian (REQUIRED)
+    If the dish has meat in the name of the recipe, it will replace the main meat with
+    portobello mushrooms (if it is fried, grilled or baked, it'll keep the mushrooms whole
+    otherwise it will use diced mushrooms) and change the cook times accordingly.
+    If there are mushrooms already in the recipe, it will replace the main meat with tofu and change
+    the cook times accordingly. It will then remove any other meat present in the
+    recipe. If meat is in the dish, but not in the name of the recipe, it will replace the first
+    meat it finds with baby bella mushrooms if mushrooms are not already present and change the cook times
+    accordingly, otherwise it will replace it with tofu. It then removes any other meat from the recipe.
+    If there is no meat in it already, it will output the original recipe.
 
-To non-vegetarian...
+To non-vegetarian (REQUIRED)
+    If there is jackfruit in the recipe, it will replace it with shredded chicken and change the
+    cook times accordingly. If there is tofu in the recipe, it will replace it with chicken breast
+    (if it is fried or grilled tofu it will keep the breast whole otherwise it will use diced chicken).
+    Otherwise, it will try to determine what type of food the recipe is making and choose the meat accordingly.
+    If it's a soup, it'll add bacon on top. If it's a sandwich, it will add ham into the sandwich.
+    If it's a salad, it will add grilled chicken breast on top. If it's a casserole, it will add ground beef.
+    If it's a rice or pasta, it will mix shrimp into the dish. If it doesn't fall into any of those categories,
+    it will try adding cut chicken breast. If there is already meat in it, it will output the original recipe.
 
-To vegan...
+To vegan (OPTIONAL)
+    Vegan will first run to vegetarian and then make many substitutions replacing dairy products and other
+    non-vegan products with acceptable substitutes.
+
 
 Transform amount can either double the amount of food or cut it in half.
     - Double: the function will go through and double the amount of each of the ingredients.
