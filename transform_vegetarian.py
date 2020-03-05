@@ -185,6 +185,8 @@ def remove_meat(meat, new_ingredient_info, new_directions):
 
 
 def to_vegetarian(recipe):
+    print("===============")
+    print("== CHANGELOG ==")
     full_ingredient_info, ingredients = extract_food_info(recipe.ingredients)
     new_ingredient_info = full_ingredient_info
     directions, master_tools, master_methods = extract_directional_info(recipe.directions, ingredients)
