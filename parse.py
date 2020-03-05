@@ -110,7 +110,7 @@ def fix_name(name, prep_lst, des_lst):
                 return i
         return False
 
-    other_lst = [' and', ' into', ' to', ' for', ' while']
+    other_lst = [' and', ' into', ' to', ' for', ' while', ' or ']
     prep_bool = lookup(name, prep_lst)
     while prep_bool:
         name = name.replace(prep_bool, "")
@@ -138,7 +138,7 @@ def extract_food_info(ing_lst):
                    'divided', 'drained', 'finely', 'grated', 'juiced', 'minced', 'peeled', 'rinsed', 'seeded',
                    'shredded', 'skinless', 'sliced', 'steamed', 'uncooked', 'shelled', 'thawed', 'shucked']
     description = ['dried', 'fresh', 'freshly', 'large', 'medium', 'seasoned', 'small', 'thinly', 'unopened',
-                   'undrained', 'ground', 'spicy', 'bone-in', 'chilled', 'lean']
+                   'undrained', 'ground', 'spicy', 'bone-in', 'chilled', 'lean','coarsely']
     measurements = ['bunch', 'can', 'clove', 'cup', 'ounce', 'package', 'pinch', 'pint', 'pound', 'teaspoon',
                     'tablespoon', 'container','dash','quart','pod']
 
@@ -346,6 +346,7 @@ def make_recipe_obj(recipe_obj, food_obj_lst, direc_obj_lst):
     ingredients = []
     for i in food_obj_lst:
         ing = ''
+        totaste = False
         if i.quant:
             i.quant = round(i.quant,3)
             str_quant = str(i.quant)
@@ -353,9 +354,15 @@ def make_recipe_obj(recipe_obj, food_obj_lst, direc_obj_lst):
                 str_quant = str_quant[:-2]
             ing += str_quant + " "
         if i.meas:
-            ing += str(i.meas) + " "
+            if i.meas == 'to taste':
+                totaste = True
+            else:
+                ing += str(i.meas) + " "
         if i.name:
-            ing += str(i.name) + ", "
+            if totaste:
+                ing = str(i.name) + ' to taste, '
+            else:
+                ing += str(i.name) + ", "
         if i.desc:
             ing += str(i.desc) + " "
         if i.prep:

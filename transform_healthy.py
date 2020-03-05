@@ -113,15 +113,17 @@ def cut_amount(step_text):
 
 def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
 	#basic lists to cycle through to make changes
-	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'buttermilk', 'cheese','cream']
-	cut_fourth = ['salt']
-	low_fat = ['milk','cheese','cream','yogurt']
-	whole_grain = ['pasta','bread','rice']
+	cut_half = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'buttermilk', 'cheese','cream','egg','cinnamon','coconut','vanilla']
+	cut_fourth = ['salt','frosting','syrup','jelly']
+	low_fat = ['milk','cheese','cream','yogurt','half-and-half']
+	whole_grain = ['pasta','bread','rice','flour']
 	low_sodium = ['soy sauce']
 	ok_meat = ['chicken','turkey','fish']
 	bad_meat = ['sausage','beef','pork','venison','bacon','ham','chop','lamb','rump','steak','ribeye','loin','brisket','ribs','veal','shoulder']
 	#initalize substitution list for making changes in the directions in reference to foods
 	subs = []
+	cuts = []
+	adds = []
 	#name of the meat to substitue is initialize as empty, list is to account for multiple meats
 	meat_name_lst = []
 	#boolean for if the 'trim meat fat and skin' is added to directions
@@ -142,34 +144,42 @@ def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, m
 		if 'oil' in ing.name.lower():
 			subs.append([ing.name, 'extra-virgin olive oil'])
 			ing.name = 'extra-virgin olive oil'
+		if 'egg' in ing.name.lower().split():
+			subs.append([ing.name, 'egg whites'])
+			ing.name = 'egg whites'
 		if 'ranch' in ing.name.lower():
 			subs.append([ing.name, 'italian dressing'])
 			ing.name = 'italian dressing'
 		###going through the other lists and seeing if chances have to be made
 		if lookup(ing, cut_half) or other_meat or replace_meat:
 			ing.quant = ing.quant / 2
+			cuts.append([ing.name,'half'])
 			continue
 		if lookup(ing, cut_fourth):
 			ing.quant = ing.quant / 4
+			cuts.append([ing.name,'fourth'])
 			continue
 		if lookup(ing, low_fat):
+			adds.append(['low fat', ing.name])
 			ing.name = 'low fat ' + ing.name
 			continue
 		if 'mayo' in ing.name.lower():
 			subs.append([ing.name, 'low fat greek yogurt'])
 			ing.name = 'low fat greek yogurt'
-		if 'cream' in ing.name.lower() and 'cheese' not in ing.name.lower():
+		if 'cream' in ing.name.lower().split() and 'cheese' not in ing.name.lower():
 			subs.append([ing.name, 'low fat greek yogurt'])
 			ing.name = 'low fat greek yogurt'
 		if lookup(ing, whole_grain):
+			adds.append(['whole grain', ing.name])
 			ing.name = 'whole grain ' + ing.name
 			continue
 		if lookup(ing, low_sodium):
+			adds.append(['low sodium', ing.name])
 			ing.name = 'low sodium ' + ing.name
 	#code that adds a direction to trim fat and skin off of meat
+	meat_name = ''
 	if add_trim:
 		meat_len = len(meat_name_lst)
-		meat_name = ''
 		if meat_len == 1:
 			meat_name = meat_name_lst[0]
 		elif meat_len == 2:
@@ -183,6 +193,7 @@ def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, m
 
 	#making food substitutions to the directions list
 	#print(subs)
+	saut = False
 	for direc in direc_obj_lst:
 		for sub in subs:
 			direc.step = make_substitutions(sub[0],sub[1],direc.step)
@@ -193,9 +204,31 @@ def healthy(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, m
 		direc.step = direc.step.replace(' Fry', 'Sauté')
 		direc.step = direc.step.replace(' fried', 'sautéd')
 		direc.step = direc.step.replace(' Fried', 'Sautéd')
+
 		for n, i in enumerate(direc.method):
 			if i == 'fry':
-				direc.method[n] = 'saute'
+				saut = True
+				direc.method[n] = 'sauté'
+
+	old_serv = recipe_obj.servings
+	recipe_obj.servings += int(recipe_obj.servings/2)
+	recipe_obj.name += ' transformed to healthy'
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	for i in subs:
+		print("- Substituted %s for %s" % (i[1],i[0]))
+	for i in cuts:
+		print("- Cut the amount of %s by %s" % (i[0],i[1]))
+	for i in adds:
+		print("- Added %s to %s" % (i[0],i[1]))
+	if add_trim:
+		print("- Added a step to trim the fat off of " + meat_name)
+	if saut:
+		print("- Changed cooking method from fry to sauté")
+	print("- Increased the serving size from " + str(old_serv) + ' to ' + str(recipe_obj.servings))
+	print("===============\n")
 
 	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
@@ -234,9 +267,11 @@ def cut_amount_mod(step_text):
 def unhealthy(recipe_obj, food_obj_lst, direc_obj_lst, methods_lst):
 	#basic lists to cycle through to make changes
 	double = ['butter', 'margarine','shortening','oil','sugar', 'chocolate', 'buttermilk', 'cheese','cream','salt']
-	remove_arr = ['low fat','Low fat','low-fat','Low-fat','whole grain','Whole grain','Multi-grain','multi-grain','lean','Lean','low sodium','Low sodium']
+	remove_arr = ['low fat','Low fat','low-fat','Low-fat','whole grain','Whole grain','whole wheat', 'Whole wheat','Multi-grain','multi-grain','lean','Lean','low sodium','Low sodium']
 	#initalize substitution list for making changes in the directions in reference to foods
 	subs = []
+	adds = []
+	cuts = []
 
 	for ing in food_obj_lst:
 		if 'oil' in ing.name.lower():
@@ -246,25 +281,41 @@ def unhealthy(recipe_obj, food_obj_lst, direc_obj_lst, methods_lst):
 			subs.append([ing.name, "ranch"])
 			ing.name = 'ranch'
 		if 'yogurt' in ing.name.lower():
-			subs.append([ing.name, 'cream'])
-			ing.name = 'cream'
+			new = ing.name.lower().replace('yogurt', 'cream')
+			subs.append([ing.name, new])
+			ing.name = new
 		###going through the other lists and seeing if chances have to be made
 		if lookup(ing, double): #or other_meat or replace_meat:
 			ing.quant = ing.quant / .5
+			cuts.append(ing.name)
 			continue
 		for i in remove_arr:
+			if i in ing.name:
+				adds.append([i,ing.name])
 			ing.name = ing.name.replace(i, '')
 		ing.name.replace('  ',' ')
 		if 'milk' in ing.name.lower():
-			subs.append([ing.name, 'whole milk'])
-			ing.name = 'whole milk'
+			new = ing.name.lower().replace('milk','whole milk')
+			subs.append([ing.name, new])
+			ing.name = new
+		if 'egg whites' in ing.name.lower():
+			subs.append([ing.name, 'eggs'])
+			ing.name = 'eggs'
+	fry = False
+	add_trim = False
+	meat_name = ''
+	rmv = None
 	for direc in direc_obj_lst:
+		if 'trimming the fat and removing the skin' in direc.step:
+			add_trim = True
+			meat_name = direc.step[direc.step.index('the')+4:direc.step.index('by')]
+			rmv = direc
 		for sub in subs:
 			direc.step = make_substitutions(sub[0],sub[1],direc.step)
 			if sub[0] in direc.ingredient:
 				direc.ingredient[direc.ingredient.index(sub[0])] = sub[1]
 		direc.step = cut_amount_mod(direc.step)
-		sau_to_fry = [[' sautéd', 'fried'],[' Sautéd', 'Fried'],[' sauté','fry'],[' Sauté', 'Fry'],[' Sauted', ' Fried'], [' sauted', ' fried'],[' saute',' fry'],[' Saute', ' Fry']]
+		sau_to_fry = [[' sautéd', 'fried'],[' Sautéd', ' Fried'],[' sauté',' fry'],[' Sauté', ' Fry'],[' Sauted', ' Fried'], [' sauted', ' fried'],[' saute',' fry'],[' Saute', ' Fry']]
 		for i in sau_to_fry:
 			direc.step = direc.step.replace(i[0],i[1])
 		for i in remove_arr:
@@ -272,7 +323,30 @@ def unhealthy(recipe_obj, food_obj_lst, direc_obj_lst, methods_lst):
 		direc.step = direc.step.replace('  ',' ')
 		for n, i in enumerate(direc.method):
 			if i == 'saute' or i == 'sauté':
+				fry = True
 				direc.method[n] = 'fry'
+	if add_trim:
+		direc_obj_lst.remove(rmv)
+
+	old_serv = recipe_obj.servings
+	recipe_obj.servings -= int(recipe_obj.servings/2)
+	recipe_obj.name += ' transformed to unhealthy'
+
+	print("===============")
+	print("== CHANGELOG ==")
+	print("Based on the requirements, I've made the following updates to the recipe:")
+	for i in subs:
+		print("- Substituted %s for %s" % (i[1],i[0]))
+	for i in cuts:
+		print("- Doubled the amount of %s" % (i))
+	for i in adds:
+		print("- Removed %s from %s" % (i[0],i[1]))
+	if add_trim:
+		print("- Removed a step to trim the fat off of " + meat_name)
+	if fry:
+		print("- Changed cooking method from sauté to fry")
+	print("- Decreased the serving size from " + str(old_serv) + ' to ' + str(recipe_obj.servings))
+	print("===============\n")
 
 	return make_recipe_obj(recipe_obj,food_obj_lst,direc_obj_lst)
 
