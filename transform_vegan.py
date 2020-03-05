@@ -74,7 +74,7 @@ def to_vegan(recipe):
                             dir.ingredient.append(sub.name)
                             ingredient_info.append(sub)
     print("===============")
-    print("CHANGE LOG")
+    print("== CHANGELOG ==")
     if not subbed:
         print("This recipe was already vegan!")
     else:
@@ -82,4 +82,3 @@ def to_vegan(recipe):
         for sub in subbed:
             print(sub)
     return make_recipe_obj(recipe, ingredient_info, directions)
-

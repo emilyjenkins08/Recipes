@@ -49,7 +49,13 @@ def make_substitutions(old_food,new_food,step_text):
 	return step_text
 
 def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools_lst, methods_lst):
-	meat = ['chicken','turkey','fish','sausage','beef','pork','venison','bacon','ham']
+	meat = ['pork chop', 'lamb chop', 'lamb', 'mutton', 'beef', 'rump', 'steak', 'ribeye', 'fillet', 'loin',
+	         'brisket', 'pork', 'ribs', 'veal', 'turkey', 'wing', 'chicken', 'thigh', 'breast', 'liver',
+	         'bone', 'drum sticks', 'duck', 'belly', 'shoulder', 'fish', 'salmon', 'tuna', 'halibut', 'walleye crudo',
+	         'tilapia', 'sardine', 'mackerel', 'trout', 'cod', 'herring', 'anchovy', 'trout', 'perch', 'pollock', 'oyster',
+	         'mussels', 'lobster', 'carp', 'shrimp', 'snapper', 'bass', 'seafood', 'crab', 'squid', 'octopus', 'clam',
+	         'scallop', 'snail', 'escargot', 'prawn', 'langoustine', 'ham', 'bacon', 'pancetta', 'prosciutto', 'sausage',
+	         'calamari', 'venison', 'chuck','pork']
 	pasta = ['pasta','rice', 'macaroni','noodle','spaghetti','fettucine','rotini','orzo','tortellini','potato','potatoe']
 
 
@@ -156,7 +162,9 @@ def transform_soup(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, tools
 	strr = ''
 	count = 0
 	for item in items_added:
-		if count == len(items_added) - 1:
+		if len(items_added) == 1:
+			strr = item
+		elif count == len(items_added) - 1:
 			strr = strr + "and " + item
 		else:
 			strr += item + ", "
@@ -280,7 +288,9 @@ def transform_dessert(recipe_obj, food_obj_lst, food_name_lst, direc_obj_lst, to
 	strr = ''
 	count = 0
 	for item in items_added:
-		if count == len(items_added) - 1:
+		if len(items_added) == 1:
+			strr = item
+		elif count == len(items_added) - 1:
 			strr = strr + "and " + item
 		else:
 			if len(items_added) == 2:
@@ -728,7 +738,9 @@ def transform_cuisine_main(recipe_obj, food_obj_lst, food_name_lst, direc_obj_ls
 	if make_into_rice:
 		if key_ingr:
 			for item in key_ingr:
-				if count == len(key_ingr) - 1:
+				if len(items_added) == 1:
+					strrr = item
+				elif count == len(key_ingr) - 1:
 					strrr = strrr + "and " + item.name
 				else:
 					if len(key_ingr) == 2:

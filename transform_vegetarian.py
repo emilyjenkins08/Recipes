@@ -417,45 +417,45 @@ def from_vegetarian(recipe):
     shrimp = food("shrimp", 2, "ounces", 'tailless', ['peeled', 'deveined'])
     subbed = False
     print("===============")
-    print("CHANGE LOG")
+    print("== CHANGELOG ==")
     for ingredient in full_ingredient_info:
         if any([meat in ingredient.name for meat in MEATS]):
-            print("This recipe already contains meat")
+            print("This recipe already contains meat!")
             return recipe
     for ingredient in full_ingredient_info:
         if "jackfruit" in ingredient.name:
-            print("Replacing jackfruit with shredded chicken")
+            print("- Replacing jackfruit with shredded chicken")
             subbed = True
             full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, shredded_chicken,
                                                                  ingredient)
         elif "tofu" in ingredient.name:
             subbed = True
             if "grilled" in recipe.name.lower() or "fried" in recipe.name.lower():
-                print("Replacing tofu with whole chicken breast")
+                print("- Replacing tofu with whole chicken breast")
                 chicken_breast.prep = []
             else:
-                print("Replacing tofu with cut chicken breast")
+                print("- Replacing tofu with cut chicken breast")
                 chicken_breast.prep = 'cubed'
             full_ingredient_info, directions = replace_with_meat(full_ingredient_info, directions, chicken_breast,
                                                                  ingredient)
     if not subbed:
         if "salad" in recipe.name:
-            print("Adding chicken breast to salad")
+            print("- Adding chicken breast to salad")
             meat_sub = chicken_breast
         elif any([soup in recipe.name for soup in SOUPS]):
-            print("Adding bacon bits to soup")
+            print("- Adding bacon bits to soup")
             meat_sub = bacon
         elif any([cass in recipe.name for cass in CASSEROLES]):
-            print("Adding ground beef to casserole")
+            print("- Adding ground beef to casserole")
             meat_sub = ground_beef
         elif any([sandwich in recipe.name for sandwich in SANDWICH]):
-            print("Adding ham to sandwich")
+            print("- Adding ham to sandwich")
             meat_sub = ham
         elif any([pasta in recipe.name for pasta in PASTAS]) or any([rice in recipe.name for rice in RICE]):
-            print("Mixing shrimp into rice or pasta")
+            print("- Mixing shrimp into rice or pasta")
             meat_sub = shrimp
         else:
-            print("Adding cut chicken breast to dish")
+            print("- Adding cut chicken breast to dish")
             chicken_breast.prep = 'cubed'
             meat_sub = chicken_breast
         full_ingredient_info, directions = add_meat(recipe.servings, full_ingredient_info, directions, meat_sub,
