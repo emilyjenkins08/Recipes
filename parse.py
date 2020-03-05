@@ -156,8 +156,6 @@ def extract_food_info(ing_lst):
     food_name_lst = []
     # print(ind_lst, '\n')
     for item in ing_lst:
-        slt = item.split()
-        i, start, end = 0, 0, len(slt)
         name = ''
         quant = None
         meas = None
@@ -169,16 +167,16 @@ def extract_food_info(ing_lst):
             item.replace("or to taste", "")
         elif "to taste" in item:
             meas = "to taste"
-            slt.remove("to")
-            slt.remove("taste")
+            item.replace("to taste","")
         if "fat free" in item:
             desc_lst.append("fat free")
-            slt.remove("fat")
-            slt.remove("free")
+            item.replace("fat free","")
         if "skin on" in item:
             desc_lst.append("skin on")
-            slt.remove("skin")
-            slt.remove("on")
+            item.replace("skin on","")
+        item.replace("  "," ")
+        slt = item.split()
+        i, start, end = 0, 0, len(slt)
         while i < len(slt):
             wrd = slt[i]
             if len(wrd) == 0:

@@ -16,25 +16,25 @@ listing name, quantity/measurement, descriptors, and preparation. For each step,
 the user can see the actual direction as well as the ingredients, cooking methods,
 tools, and time involved in the step.
 
-To healthy takes a recipe object and transforms it to a healthier version of it while 
-still trying to maintain the overall flavor of the recipe. The function first identifies 
-meat and substitutes it with chicken breasts for meats that are identified as 'unhealthy' 
-(such as beef, pork, vension, etc). If fish, turkery, or chicken is encountered, no 
-substitutions are made. The function will also make common healthy substitutions such as 
-'extra-virgin olive oil' for 'vegetable oil' and 'egg whites' for 'eggs'. The function also 
+To healthy takes a recipe object and transforms it to a healthier version of it while
+still trying to maintain the overall flavor of the recipe. The function first identifies
+meat and substitutes it with chicken breasts for meats that are identified as 'unhealthy'
+(such as beef, pork, venison, etc). If fish, turkey, or chicken is encountered, no
+substitutions are made. The function will also make common healthy substitutions such as
+'extra-virgin olive oil' for 'vegetable oil' and 'egg whites' for 'eggs'. The function also
 runs through and identifies specific ingredients to cut by half or fourth, some of these items
-include butter, salt, sugar, oil, cheeese, and cream. The function will add 'whole wheat' to 
-foods such as flour, rice, and bread, add 'low fat' to foods like milk, and cream, add 
-'low sodium' to foods like soy sauce. The function will also change any frying cooking methods 
-to saute. If meat was detected before-hand, a step will be added to trim the fat and skin off 
+include butter, salt, sugar, oil, cheese, and cream. The function will add 'whole wheat' to 
+foods such as flour, rice, and bread, add 'low fat' to foods like milk, and cream, add
+'low sodium' to foods like soy sauce. The function will also change any frying cooking methods
+to saute. If meat was detected before-hand, a step will be added to trim the fat and skin off
 the meat. Finally, the function will increase the serving size so the serving portion is reduced.
 
-To unhealthy takes a recipe object and transforms it to a unhealthy version of it. It does this 
+To unhealthy takes a recipe object and transforms it to a unhealthy version of it. It does this
 by increasing the amount of commonly known 'unhealthy' foods such as salt, sugar, butter, oil etc.
 Substitutions for foods are also made. For example, 'eggs' is substituted for 'egg whites' and 'cream'
-will be substituted for 'yogurt'. Along with this, foods that contain healthy descripters such as 
-'whole grain' or 'low fat' or 'lean' are turned to regular version of those foods (without the 
-'whole grain' and 'low fat' for example). The function will also turn any sauteing cooking methods 
+will be substituted for 'yogurt'. Along with this, foods that contain healthy descripters such as
+'whole grain' or 'low fat' or 'lean' are turned to regular version of those foods (without the
+'whole grain' and 'low fat' for example). The function will also turn any sauteing cooking methods
 to frying and decreasing the serving size so the serving portion is increased.
 
 To vegetarian (REQUIRED)
@@ -66,8 +66,8 @@ To vegan (OPTIONAL)
 Transform amount can either double the amount of food or cut it in half.
     - Double: the function will go through and double the amount of each of the ingredients.
       The change for this is also echoed through the directions. For example, if the recipe
-      called for 2 cups of flour, it will double it to 4 cups of flour in the ingredient list 
-      and also change instances of 2 cups in the direction to 4 cups. This function will also 
+      called for 2 cups of flour, it will double it to 4 cups of flour in the ingredient list
+      and also change instances of 2 cups in the direction to 4 cups. This function will also
       change all of the cooking utensils such as pots, pans, skillets etc. to a large size. If
       the size was already large before-hand, then it is not modified. It will increase the
       size of baking-pans if it is referenced in terms of dimensions (change 9x13 to 18x13).
@@ -75,8 +75,8 @@ Transform amount can either double the amount of food or cut it in half.
 
     - Half: the function will go through and halve the amount of each of the ingredients.
       The change for this is also echoed through the directions. For example, if the recipe
-      called for 4 cups of flour, it will halve it to 2 cups of flour in the ingredient list 
-      and also change instances of 4 cups in the direction to 2 cups. This function will also 
+      called for 4 cups of flour, it will halve it to 2 cups of flour in the ingredient list
+      and also change instances of 4 cups in the direction to 2 cups. This function will also
       change all of the cooking utensils such as pots, pans, skillets etc. to a small size. If
       the size was already small before-hand, then it is not modified. It will decrease the
       size of baking-pans if it is referenced in terms of dimensions (change 18x13 to 9x13).
