@@ -137,6 +137,8 @@ def fix_name(name, prep_lst, des_lst):
             name = name[1:]
         while name[-1] in [',','.',';','-',' ']:
             name = name[:-1]
+        if 'to taste' in name:
+            name = name.replace('to taste','')
     except:
         pass
     return name
@@ -164,17 +166,17 @@ def extract_food_info(ing_lst):
         prep_lst = []
         prep = None
         if "or to taste" in item:
-            item.replace("or to taste", "")
+            item = item.replace("or to taste", "")
         elif "to taste" in item:
             meas = "to taste"
-            item.replace("to taste","")
+            item = item.replace("to taste","")
         if "fat free" in item:
             desc_lst.append("fat free")
-            item.replace("fat free","")
+            item = item.replace("fat free","")
         if "skin on" in item:
             desc_lst.append("skin on")
-            item.replace("skin on","")
-        item.replace("  "," ")
+            item = item.replace("skin on","")
+        item = item.replace("  "," ")
         slt = item.split()
         i, start, end = 0, 0, len(slt)
         while i < len(slt):
